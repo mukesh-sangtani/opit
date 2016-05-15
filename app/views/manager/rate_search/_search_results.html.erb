@@ -1,0 +1,236 @@
+<div class="panel heading-next-prev">
+  <div class="panel-body">
+  <% disabled_left = (params[:weight].to_f == 0.500) ? "disabled": ""
+     disabled_right = (params[:weight].to_f == 500.001) ? "disabled": ""
+   %>
+    <a href="javascript:void(0)" class="btn btn-primary left js_move_weight <%= disabled_left %>">
+      <i class="fa fa-chevron-left"></i>
+    </a>
+    <a href="javascript:void(0)" class="btn btn-primary right js_move_weight <%= disabled_right %>">
+      <i class="fa fa-chevron-right"></i>
+    </a>
+    <% destination_data = Destination.find(@dest_id) %>
+    <div class="h4 text-center">Results for <%= destination_data.destination_name + " " + APP_CONFIG['packet_type_id'][params[:packet_type].to_i] %> shipment weight <%= '%.2f' % params[:weight].to_f %> Kg</div>
+    <input type="hidden" id="js_destination_name" value="<%= destination_data.destination_name %>">
+    <input type="hidden" id="js_destination_code" value="<%= destination_data.sec_cd %>">
+    <input type="hidden" id="js_weight" value="<%=  params[:weight] %>">
+  </div>
+</div>
+
+<% if @documents.count > 0 %>
+    <div class="btn_wrapper" id="doc_title">
+    <h4 class="text-center margin_t_15 text-primary"> Paper Work / Documents  </h4>
+    <p class="text-center text-danger">(Documents marked as Red are mandatory)</p>
+    <% for document in @documents 
+      if document.mandatory > 0
+        anchor_class = "btn btn-flat btn-labeled btn-danger"
+      else
+        anchor_class = "btn btn-flat btn-labeled btn-default"
+      end
+
+      if params[:packet_type].to_i == APP_CONFIG['packet_type']['Sample']
+        hover_text = document.sample_text
+      else
+        hover_text = document.commercial_text
+      end
+    %>
+      <%= link_to content_tag(:span ,"",:class => "btn-label icon fa fa-file-o") + document.title, "/"+document.attachment.url, {"class"=> anchor_class, "title" => hover_text, "data-toggle" => "tooltip", "data-placement" => "bottom", "target"=> "_blank"} %>
+    <% end %>
+  <!--   <a class="btn btn-flat btn-labeled btn-danger"  data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a>
+    <a class="btn btn-flat btn-labeled btn-default"  data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a>
+    <a class="btn btn-flat btn-labeled btn-danger"  data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a>
+    <a class="btn btn-flat btn-labeled btn-default"  data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a>
+    <a class="btn btn-flat btn-labeled btn-danger"  data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a>
+    <a class="btn btn-flat btn-labeled btn-default"  data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a>
+    <a class="btn btn-flat btn-labeled btn-danger"  data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a> -->
+  </div>
+<% end %>
+
+<div class="panel search_view_table">
+  <!-- <div class="panel-heading">
+    <span class="panel-title">Hover row tables</span>
+  </div> -->
+  
+    <table class="table table-hover" id="jq-datatables-example">
+      <thead>
+        <tr>
+          <th>Channel</th>
+          <th>Network</th>
+          <% if @admin_user.admin_type == APP_CONFIG['admin_type']['Admin'] %>
+          <th>Cost</th>
+          <% end %>
+          <th>Rate</th>
+          <th>Service</th>
+          <th>Packaging</th>
+          <th>Options</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% for rate_record in @rate_list
+        if params[:weight].to_f > 20.000
+          per_kg_text = "/Kg"
+          if rate_record.rate_type == APP_CONFIG['rate_type']['Basic']
+            cost = (rate_record.rate / rate_record.weight_to).round
+          else
+            cost = rate_record.rate.round
+          end
+        else
+           per_kg_text = ""
+          if rate_record.rate_type == APP_CONFIG['rate_type']['Basic']
+            cost = rate_record.rate
+          else
+            cost = (rate_record.rate * params[:weight].to_f).round
+          end
+        end
+
+        cost = cost + rate_record.rate_master.fixed_cost.round
+        
+        if rate_record.rate_master.margin_type == APP_CONFIG['margin_type']['Percent']
+          margin = ((cost * rate_record.rate_master.margin)/100).round
+        else
+          margin = rate_record.rate_master.margin.round
+        end
+        rate = cost + margin
+        fuel = ((rate*rate_record.rate_master.fuel)/100).round
+        c_fuel = ((cost*rate_record.rate_master.fuel)/100).round
+        if rate_record.rate_master.s_tax.to_i > 0
+          s_tax = (((rate + fuel)*APP_CONFIG['service_tax'].to_f)/100).round
+          c_s_tax = (((cost + c_fuel)*APP_CONFIG['service_tax'].to_f)/100).round
+        else
+          s_tax = 0
+          c_s_tax = 0
+        end
+        if @admin_user.admin_type == APP_CONFIG['admin_type']['Admin']
+          rate_breakup = cost.to_s + " + " + margin.to_s + "(M) + " +fuel.to_s + "(" +rate_record.rate_master.fuel.to_s+ "%)" + " + " +s_tax.to_s + "(" +APP_CONFIG['service_tax']+ "%)"
+          cost_breakup = cost.to_s + " + " + c_fuel.to_s + "(" +rate_record.rate_master.fuel.to_s+ "%)" + " + " +c_s_tax.to_s + "(" +APP_CONFIG['service_tax']+ "%)"
+        else
+          rate_breakup = rate.to_s + " + " + fuel.to_s + "(" +rate_record.rate_master.fuel.to_s+ "%)" + " + " + s_tax.to_s + "(" +APP_CONFIG['service_tax']+ "%)"
+        end
+       %>
+        <tr>
+          <td><%= rate_record.rate_master.name.html_safe %></td>
+          <td><%= rate_record.rate_master.network.network_name %></td>
+          <% if @admin_user.admin_type == APP_CONFIG['admin_type']['Admin'] %>
+            <td>
+              <span  class="tooltips-comment" data-toggle="tooltip" data-placement="top" data-original-title="<%= cost_breakup %>">
+                <%= (cost + c_fuel + c_s_tax).round.to_s + per_kg_text %>
+              </span>
+            </td>
+          <% end %>
+          <td>
+            <span  class="tooltips-comment" data-toggle="tooltip" data-placement="top" data-original-title="<%= rate_breakup %>">
+              <%= (cost + margin + fuel + s_tax).round.to_s + per_kg_text %>
+            </span>
+          </td>
+          <td><%= APP_CONFIG['delivery_days'][rate_record.dely_1.to_s+"-"+rate_record.dely_2.to_s] %></td>
+          <td><%= rate_record.rate_master.packaging_details.html_safe %></td>
+          <td>
+              <% if rate_record.rate_master.status == APP_CONFIG['status']['Active'] %>
+                <%= link_to content_tag(:i ,"",:class => "fa fa-check"), "javascript:void(0)", :title => "Rate is ACTIVE", :class => 'btn btn-info btn-sm btn-rounded' %>
+              <% else %>
+                <%= link_to content_tag(:i ,"",:class => "fa fa-times"), "javascript:void(0)", :title => "Rate is INACTIVE", :class => 'btn btn-danger btn-sm btn-rounded' %>
+              <% end %>
+
+              <% if rate_record.rate_master.show_to_client == APP_CONFIG['status']['Active'] %>
+                <%= link_to content_tag(:i ,"",:class => "fa fa-eye"), "javascript:void(0)", :title => "Visible to Client", :class => 'btn btn-default btn-sm btn-rounded' %>
+              <% else %>
+                <%= link_to content_tag(:i ,"",:class => "fa fa-eye-slash"), "javascript:void(0)", :title => "Invisible from Client", :class => 'btn btn-default btn-sm btn-rounded' %>
+              <% end %>
+
+            <%= link_to content_tag(:i ,"",:class => "fa fa-list-ol"), "javascript:void(0)", :title => "Last 10 records", :class => 'btn btn-success btn-sm btn-rounded js_show_list', :rate_master_id => rate_record.rate_master_id  %>
+
+            <a href="javascript:void(0)" class="btn btn-primary btn-sm btn-rounded tooltips-comment" data-toggle="tooltip" data-placement="top" title="" data-original-title="Tooltip on left">
+              <i class="fa fa-comment-o"></i>
+            </a>
+            <%= link_to content_tag(:i ,"",:class => "fa fa-envelope-o"), url_for(controller: "manager/rate_quotes", action: "rate_quote_session"), :title => "Quote this rate", :remote => true, :method => "post", :class => 'btn btn-warning btn-sm btn-rounded js_send_rate', :rate_master_id => rate_record.rate_master_id, :network_id => rate_record.rate_master.network_id, :rate => rate_record.rate  %>
+          </td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+</div>
+<script type="text/javascript">
+    $('.tooltips-comment').tooltip();
+    $("#doc_title a").tooltip({
+      html: true
+    });
+    $('#jq-datatables-example').dataTable({
+       "language": {
+          "emptyTable": "No rates available for this destination."
+        },
+        "order": [[ 2, "asc" ]],
+        "paging": false,
+        "info": false,
+        "columnDefs": [
+          { "type": "html", "targets": 0 }
+        ],
+        initComplete: function () {
+          /*table = this;
+            table.api().columns().eq(0).each( function ( index ) {
+          //   var column = table.column( index );
+
+            //this.api().columns().eq(0).each(function(index){
+                var column = table.api().column( index );
+                //var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(column).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                });
+            });*/
+        }
+      });
+
+    // Add event listener for opening and closing details
+    //$('.js_show_list').click(function () {   
+</script>
+       <!--  <tr class="no-hover">
+          <td colspan="8">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <th>AWB</th>
+                  <th>Client</th>
+                  <th>Booking Date</th>
+                  <th>Weight</th>
+                  <th>PCS</th>
+                  <th>Delviry Date</th>
+                </tr>
+                <tr>
+                  <td>AWB</td>
+                  <td>Client</td>
+                  <td>Booking Date</td>
+                  <td>Weight</td>
+                  <td>PCS</td>
+                  <td>Delviry Date</td>
+                </tr>
+                <tr>
+                  <td>AWB</td>
+                  <td>Client</td>
+                  <td>Booking Date</td>
+                  <td>Weight</td>
+                  <td>PCS</td>
+                  <td>Delviry Date</td>
+                </tr>
+                <tr>
+                  <td>AWB</td>
+                  <td>Client</td>
+                  <td>Booking Date</td>
+                  <td>Weight</td>
+                  <td>PCS</td>
+                  <td>Delviry Date</td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr> -->

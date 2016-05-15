@@ -1,0 +1,106 @@
+html body.page-signin{
+	background: #eeeeee !important;
+}
+.page-signin .signin-container{
+	border:solid 1px #cccccc;
+}
+#main-menu .navigation{
+	padding: 7px 0 0;
+}
+.search_view_table .table-header{
+	display: none;
+}
+.inline-form-grp .field-sec{
+	overflow: hidden;
+	display: block;
+}
+.inline-form-grp .btn{
+	float: left;
+	margin-right: 10px;
+}
+.heading-next-prev .left, .heading-next-prev .right{
+	position: absolute;
+}
+.heading-next-prev .left{
+	left: 15px;
+}
+.heading-next-prev .right{
+	right: 15px;
+}
+.heading-next-prev .h4{
+	margin: 6px 0;
+}
+.heading-next-prev .panel-body{
+	padding: 10px;
+}
+.heading-next-prev.panel{
+	margin-bottom: 10px;
+}
+.search_view_table .form-control{
+	width: 100%;
+}
+.m-l-5{
+	margin-left: 5px;
+}
+.m-r-5{
+	margin-right: 5px;
+}
+.rate-search .form-group{
+	margin-bottom: 10px;
+}
+.table-hover>tbody>tr.no-hover>td{
+	background-color: #E4E9EA;
+}
+.table-hover>tbody>tr.no-hover:hover>td{
+	background-color: #E4E9EA;
+}
+.flying-mailbox{
+	position: fixed;
+	top: 50px;
+	right: -300px;
+	background-color: #fafafa;
+}
+.flying-mailbox.open{
+	right: 0px;
+}
+.flying-mailbox .list-sec{
+	width: 300px;
+	max-height: 300px;
+	overflow: auto;
+}
+.flying-mailbox .bar{
+	width: 40px;
+	height: 32px;
+	border-radius: 3px 0px 0px 3px;
+	left: -40px;
+	position: absolute;
+	background-color: #666666;
+	color: #fff;
+	padding: 5px 11px;
+	font-size: 17px;
+}
+.flying-mailbox .bar .label{
+	background: #e66454;
+	font-size: 10px;
+    padding: 0 2px;
+    line-height: 10px;
+    position: absolute;
+    display: block;
+    right: 6px;
+}
+#js_network_zoning_form .select2-container{
+	max-width: 60%;
+}
+
+.wd_100{
+	width: 100%;
+}
+.margin_b_0{
+	margin-bottom: 0px!important;
+}
+.margin_b_25{
+	margin-bottom: 25px!important;
+}
+.padd_l_0{
+	padding-left: 0!important;
+}

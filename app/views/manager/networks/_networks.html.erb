@@ -1,0 +1,35 @@
+<table class="table table-hover" id="jq-datatables-example1">
+	<thead>
+		<tr>
+			<th> <%= sortable "network_name" %> </th>
+			<th> Network Type </th>
+			<th> Image </th>
+			<th> Status </th>
+			<th> Action </th>
+		</tr>
+	</thead>
+	<tbody>
+	<% if @networks.total_count > 0 
+		for network in @networks %>
+			<tr>
+				<td><%= network.network_name.html_safe %></td>
+				<td><%= APP_CONFIG['des_type_id'][network.network_type] %></td>
+				<td><%= image_tag "/"+network.image.url(:thumb) %></td>
+				<td><%= APP_CONFIG['status_id'][network.status] %></td>
+				<td>
+					<%= link_to content_tag(:i ,"",:class => "fa fa-pencil"), edit_manager_network_path(network.id), {"title" => 'Edit', "data-toggle" => "modal", "data-target" => "#editModal"} %> &nbsp;&nbsp;
+					<%= (network.status == APP_CONFIG['status']['Active']) ? link_to(content_tag(:i ,"",:class => "fa fa-eye"),url_for(controller: "manager/networks", action: "change_status", id: network.id), :class => 'js_change_status', :remote => true,:title => 'Active; Mark as inactive') : link_to(content_tag(:i ,"",:class => "fa fa-eye-slash grey"),url_for(controller: "manager/networks", action: "change_status", id: network.id),:class => 'js_change_status', :remote => true,:title => 'Inactive; Mark as active') %> &nbsp;&nbsp;
+					<%= link_to content_tag(:i ,"",:class => "fa fa-trash-o"), manager_network_path(network.id), :title => 'Delete', :class => 'js_delete_item', :remote => true,:method => :delete, :data => {:confirm => "Are you sure, yuo want to delete this network?"} %>&nbsp;&nbsp;
+					<%= link_to content_tag(:i ,"",:class => "fa fa-gears"),url_for(:controller => 'manager/networks', :action => 'manage_zones', :id => network.id),:title => 'Manage Zone Association' %>
+				</td>
+			</tr>
+	<% end
+	else %>
+		<tr>
+			<td colspan="4" align="center">No records found.</td>
+		</tr>
+	<% end %>
+	</tbody>
+</table>
+
+<%= render 'manager/shared/manager_pagination', :records => @networks %>

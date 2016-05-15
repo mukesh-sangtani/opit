@@ -1,0 +1,40 @@
+<% content_for :header do %>
+	<h1 class="col-xs-12 col-sm-4 text-center text-left-sm"><i class="fa fa-lock page-header-icon"></i>&nbsp;&nbsp;Rate Query Log</h1>
+	    <a class="add-new_btn btn btn-page-back col-sm-1">
+	      <i class="fa fa-angle-left"></i> GO BACK
+	    </a>
+<% end %>
+
+<%= form_tag manager_rate_query_logs_path, :method => 'get', :id => "search_form" do %>
+  	<%= hidden_field_tag :direction, params[:direction], :id => "js_direction" %>
+  	<%= hidden_field_tag :sort, params[:sort], :id => "js_sort" %>
+  	<%= hidden_field_tag :limit, params[:limit], :id => "js_limit" %>
+  	<%= hidden_field_tag :page, params[:page], :id => "js_page" %>
+  	<div class="row">
+	    <div class="col-sm-12">
+		    <div class="first-col col-sm-3">
+		      <% #select_tag :destination_id, option_groups_from_collection_for_select(@dest_list, :Destination, "d_type", "id", "destination_name"), :class => "page-search_sfeild", :include_blank => "ALL" %>
+		    </div>
+		    <div class="col-sm-3">
+	    		<%= button_tag "Search", :name => nil, :id => "search_form_submit", :class => "btn btn-success page-btn-search", :type => "button" %>
+		    </div>
+	    </div>
+  	</div>
+	<div class="panel search_view_table" id="logs">
+		<%= render 'logs' %>
+	</div>
+<% end %>
+
+<script type="text/javascript">
+  $("body").on("ajax:success",".js_show_session1",function(xhr,data){
+    console.log(data);
+    /*if(data.status){
+      $("#js_success").attr("data-text",data.success_message)
+      $("#js_success").trigger("click");
+      get_list();
+    }else{
+      $("#js_error").attr("data-text",data.error_message)
+      $("#js_error").trigger("click");
+    }*/
+  });
+</script>

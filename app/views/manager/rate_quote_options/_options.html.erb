@@ -1,0 +1,30 @@
+<table class="table table-hover" id="jq-datatables-example1">
+	<thead>
+		<tr>
+			<th> <%= sortable "title" %> </th>
+			<th> <%= sortable "option_type", "Type" %> </th>
+			<th> Options </th>
+			<th> Action </th>
+		</tr>
+	</thead>
+	<tbody>
+	<% if @rate_quote_options.total_count > 0
+		for quote_option in @rate_quote_options %>
+		<tr>
+			<td><%= quote_option.title %></td>
+			<td><%= APP_CONFIG['quote_option_id'][quote_option.option_type] %></td>
+			<td><%= quote_option.options %></td>
+			<td> 
+				<%= link_to content_tag(:i ,"",:class => "fa fa-pencil"), edit_manager_rate_quote_option_path(quote_option.id), {"title" => 'Edit', "data-toggle" => "modal", "data-target" => "#editModal"} %> &nbsp;&nbsp;
+			</td>
+		</tr>
+	<% end
+	else %>
+		<tr>
+			<td colspan="3" align="center">No records found.</td>
+		</tr>
+	<% end %>
+	</tbody>
+</table>
+
+	<%= render 'manager/shared/manager_pagination', :records => @rate_quote_options %>

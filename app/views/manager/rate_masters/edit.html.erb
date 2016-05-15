@@ -1,0 +1,137 @@
+<% content_for :header do %>
+	<h1 class="col-xs-12 col-sm-4 text-center text-left-sm"><i class="fa fa-money page-header-icon"></i>&nbsp;&nbsp;Edit Rate Master</h1>
+  <%= link_to "GO BACK", manager_rate_masters_path, :class => 'add-new_btn btn btn-page-back col-sm-1' %>
+<% end %>
+
+<%= form_for(@rate_master, url: manager_rate_master_path, remote: true, method: :patch, html: {id: 'edit_form', class: 'create_record_form'})  do |f| %>
+  <div class="box">
+    <div class="box-body bg-white-15">
+      <div class="row">
+        <label class="col-sm-2">Title</label>
+        <div class="col-sm-6">
+          <%= f.text_field :name, :class => 'form-control page-addform_feild', :placeholder => 'Enter Title' %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+      <div class="row">
+        <label class="col-sm-2">Category</label>
+        <div class="col-sm-6">  
+          <%= f.select :category_id, options_for_select(APP_CONFIG['rate_master_category_id'].map{|category| [ category[1], category[0] ]},@rate_master.category_id.to_s), {:include_blank => 'Select Category'}, :class => 'form-control page-addform_feild' %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+      <div class="row">
+        <label class="col-sm-2">Network</label>
+        <div class="col-sm-6">
+          <%= f.collection_select :network_id, Network.all.where("status = ?",APP_CONFIG['status']['Active']).order("network_name"), :id, :network_name,{:include_blank => 'Select Network'}, :class => 'form-control page-addform_feild' %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="col-sm-2">Fixed Cost (AWB Cost)</label>
+        <div class="col-sm-6">
+          <%= f.text_field :fixed_cost, :class => 'form-control page-addform_feild', :placeholder => 'Enter Fixed Cost' %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+      <div class="row">
+        <label class="col-sm-2">Fuel</label>
+        <div class="col-sm-6">  
+          <%= f.text_field :fuel, :class => 'form-control page-addform_feild', :placeholder => 'Enter Fuel Surcharge' %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+
+      <div class="row mar-bottom-15">
+        <label class="padding-left_12 col-sm-2">Serv. Tax Applied</label>
+        <div class="col-sm-6">  
+          <%= f.check_box :s_tax, {:class => 'outline-switcher', "data-class" => "switcher-sm"}, "1", "0" %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+
+      <div class="row">
+
+        <label class="col-sm-2">Packaging Details</label>
+        <div class="col-sm-6">
+          <%= f.text_area :packaging_details, :class => 'form-control page-addform_feild', :placeholder => 'Enter Packaging Details' %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+      <div class="row">
+        <label class="col-sm-2">CIS Forwarder Code</label>
+        <div class="col-sm-6">
+          <%= f.text_field :cis_for_cd, :class => 'form-control page-addform_feild', :placeholder => 'Enter CIS Forwarder Code' %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+      <div class="row">
+        <label class="col-sm-2">CIS Network Code</label>
+        <div class="col-sm-6">
+          <%= f.text_field :cis_net_cd, :class => 'form-control page-addform_feild', :placeholder => 'Enter CIS Network Code' %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+      <div class="row">
+        <label class="col-sm-2">CIS Service Code</label>
+        <div class="col-sm-6">
+          <%= f.text_field :cis_service_cd, :class => 'form-control page-addform_feild', :placeholder => 'Enter CIS Service Code' %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+      <div class="row mar-bottom-15">
+        <label class="padding-left_12 col-sm-2">Fetch CIS Data</label>
+        <div class="col-sm-6">
+          <%= f.check_box :cis_fetch_data, {:class => 'outline-switcher', "data-class" => "switcher-sm"}, "1", "0" %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+      <div class="row">
+        <label class="col-sm-2">CIS Data Fetch Interval</label>
+        <div class="col-sm-6">
+          <%= f.select :cis_fetch_interval, options_for_select(APP_CONFIG['data_fetch_interval'].map{|interval| [ interval[1], interval[0] ]},@rate_master.cis_fetch_interval.to_s), {:include_blank => 'Select Interval'}, :class => 'form-control page-addform_feild' %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+
+      <div class="row mar-bottom-15">
+        <label class="padding-left_12 col-sm-2">Show to Client</label>
+        <div class="col-sm-6">
+          <%= f.check_box :show_to_client, {:class => 'outline-switcher', "data-class" => "switcher-sm"}, "1", "0" %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+
+      <div class="row mar-bottom-15">
+        <label class="padding-left_12 col-sm-2">Status</label>
+        <div class="col-sm-6">
+          <%= f.check_box :status, {:class => 'outline-switcher', "data-class" => "switcher-sm"}, "1", "2" %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+      
+      <div class="row">
+        <label class="padding-left_12 col-sm-2"></label>
+        <div class="col-sm-10">
+          <button class="btn btn-primary" type="submit">Save Changes</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <%= link_to "Close", manager_rate_masters_path, :class => 'btn btn-default' %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

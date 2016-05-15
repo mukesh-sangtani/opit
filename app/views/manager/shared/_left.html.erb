@@ -1,0 +1,97 @@
+<% controller, action = params[:controller], params[:action]
+	active_menu = {:dashboard => "", :networks => "", :countries => "", :rate_master => "", :search_rate => "", :search_rate => "", :send_rate => ""}
+	#if controller == "manager/destinations"
+ %>
+<!-- 4. $MAIN_MENU -->
+<div id="main-menu" role="navigation">
+	<div id="main-menu-inner">
+		<div class="menu-content top" id="menu-content-demo">
+		</div>
+		<ul class="navigation">
+			<li>
+				<%= link_to content_tag(:i ,"",:class => "menu-icon fa fa-dashboard") + content_tag(:span ,"Dashboard",:class => "mm-text"), manager_dashboard_index_path, {"title" => 'Dashboard'} %>
+				<!-- <a href="index.html"><i class="menu-icon fa fa-dashboard"></i><span class="mm-text">Dashboard</span></a> -->
+			</li>
+			<% if check_visibility?("zones") %>
+			<li>
+				<%= link_to content_tag(:i ,"",:class => "menu-icon fa fa-tag") + content_tag(:span ,"Zones",:class => "mm-text"), manager_zones_path, {"title" => 'Zones', 'tabindex'=>'-1'} %>
+			</li>
+			<% end
+				if (check_visibility?("destination_country_list") || check_visibility?("destination_city_list")) %>
+			<li class="mm-dropdown">
+				<a href="#"><i class="menu-icon fa fa-map-marker"></i><span class="mm-text">Destinations</span></a>
+				<ul>
+					<% if check_visibility?("destination_country_list") %>
+					<li>
+						<%= link_to content_tag(:span ,"Country List (International)",:class => "mm-text"), manager_destinations_path, {"title" => 'Country List', 'tabindex'=>'-1'} %>
+					</li>
+					<% end 
+						if check_visibility?("destination_city_list") %>
+					<li>
+						<%= link_to content_tag(:span ,"City List (Domestic)",:class => "mm-text"), url_for(controller: "manager/destinations", action: "city_list"), {"title" => 'City List', 'tabindex'=>'-1'} %>
+					</li>
+					<% end %>
+				</ul>
+			</li>
+			<% end
+				if check_visibility?("networks") %>
+			<li>
+				<%= link_to content_tag(:i ,"",:class => "menu-icon fa fa-globe") + content_tag(:span ,"Networks",:class => "mm-text"), manager_networks_path, {"title" => 'Networks', 'tabindex'=>'-1'} %>
+			</li>
+			<% end
+				if (check_visibility?("manage_rates_rate_master") || check_visibility?("manage_rates_feed_rates")) %>
+			<li class="mm-dropdown">
+				<a href="#"><i class="menu-icon fa fa-money"></i><span class="mm-text">Manage Rates</span></a>
+				<ul>
+					<% if check_visibility?("manage_rates_rate_master") %>
+					<li>
+						<%= link_to content_tag(:span ,"Rate Master",:class => "mm-text"), manager_rate_masters_path, {"title" => 'Rate Master', 'tabindex'=>'-1'} %>
+					</li>
+					<% end
+					if check_visibility?("manage_rates_feed_rates") %>
+					<li>
+						<%= link_to content_tag(:span ,"Feed Rates",:class => "mm-text"), url_for(controller: "manager/rates", action: "manage_rates"), {"title" => 'Feed Rates', 'tabindex'=>'-1'} %>
+					</li>
+					<% end %>
+				</ul>
+			</li>
+			<% end
+				if check_visibility?("rate_search") %>
+			<li>
+				<%= link_to content_tag(:i ,"",:class => "menu-icon fa fa-search") + content_tag(:span ,"Rate Search",:class => "mm-text"), manager_rate_search_index_path, {"title" => 'Rate Search', 'tabindex'=>'-1'} %>
+			</li>
+			<% end
+				if check_visibility?("rate_query_log") %>
+			<li>
+				<%= link_to content_tag(:i ,"",:class => "menu-icon fa fa-lock") + content_tag(:span ,"Rate Query Log",:class => "mm-text"), manager_rate_query_logs_path, {"title" => 'Rate Query Log', 'tabindex'=>'-1'} %>
+			</li>
+			<% end
+				if check_visibility?("rate_quotes") %>
+			<li>
+				<%= link_to content_tag(:i ,"",:class => "menu-icon fa  fa-envelope-o") + content_tag(:span ,"Rate Quotes",:class => "mm-text"), url_for(controller: 'manager/rate_quotes',action: 'step1'), {"title" => 'Rate Quotes', 'tabindex'=>'-1'} %>
+			</li>
+			<% end
+				if check_visibility?("rate_quote_options") %>
+			<li>
+				<%= link_to content_tag(:i ,"",:class => "menu-icon fa fa-tasks") + content_tag(:span ,"Rate Quote Options",:class => "mm-text"), manager_rate_quote_options_path, {"title" => 'Rate Quote Options', 'tabindex'=>'-1'} %>
+			</li>
+			<% end
+				if check_visibility?("users") %>
+			<li>
+				<%= link_to content_tag(:i ,"",:class => "menu-icon fa fa-user") + content_tag(:span ,"Users",:class => "mm-text"), manager_admins_path, {"title" => 'Users', 'tabindex'=>'-1'} %>
+			</li>
+			<% end
+				if check_visibility?("clients") %>
+			<li>
+				<%= link_to content_tag(:i ,"",:class => "menu-icon fa fa-group") + content_tag(:span ,"Clients",:class => "mm-text"), "#", {"title" => 'Clients', 'tabindex'=>'-1'} %>
+			</li>
+			<% end
+				if check_visibility?("documents") %>
+			<li>
+				<%= link_to content_tag(:i ,"",:class => "menu-icon fa fa-file-o") + content_tag(:span ,"Documents",:class => "mm-text"), manager_documents_path, {"title" => 'Documents', 'tabindex'=>'-1'} %>
+			</li>
+			<% end %>
+		</ul>
+	</div> <!-- / #main-menu-inner -->
+</div> <!-- / #main-menu -->
+<!-- /4. $MAIN_MENU -->

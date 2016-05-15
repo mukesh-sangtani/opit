@@ -1,0 +1,58 @@
+<% content_for :header do %>
+	<h1 class="col-xs-12 col-sm-4 text-center text-left-sm"><i class="fa fa-money page-header-icon"></i>&nbsp;&nbsp;Edit Margin</h1>
+  <%= link_to "GO BACK", manager_rate_masters_path, :class => 'add-new_btn btn btn-page-back col-sm-1' %>
+<% end %>
+
+<%= form_for(@rate_master, url: url_for(:controller => "rate_masters", :action => "update_margins"), remote: true, method: :post, html: {id: 'edit_form', class: 'create_record_form'})  do |f| %>
+  <%= f.hidden_field :id %>
+  <div class="box">
+    <div class="box-body bg-white-15">
+      <div class="row mar-bottom-15">
+        <label class="col-sm-2">Title</label>
+        <div class="col-sm-6"> <%= @rate_master.name %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="padding-left_12 col-sm-2">Margin Type</label>
+        <div class="col-sm-6 radio">
+          <label> 
+              <%= f.radio_button :margin_type, 1, {:class => 'px'} %> <span class="lbl">Percent</span>
+          </label>
+          <label> 
+              <%= f.radio_button :margin_type, 2, {:class => 'px'} %> <span class="lbl">Amount</span>
+          </label>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="col-sm-2">Credit Margin</label>
+        <div class="col-sm-6">  
+          <%= f.text_field :margin, :class => 'form-control page-addform_feild', :placeholder => 'Enter Credit Margin' %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+      <div class="row">
+        <label class="col-sm-2">Cash Margin</label>
+        <div class="col-sm-6">
+          <%= f.text_field :margin_two, :class => 'form-control page-addform_feild', :placeholder => 'Enter Cash Margin' %>
+        </div>
+        <div class="col-sm-4 js_error_container">               
+        </div>
+      </div>
+      
+      <div class="row">
+        <label class="padding-left_12 col-sm-2"></label>
+        <div class="col-sm-10">
+          <button class="btn btn-primary" type="submit">Save Changes</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <%= link_to "Close", manager_rate_masters_path, :class => 'btn btn-default' %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

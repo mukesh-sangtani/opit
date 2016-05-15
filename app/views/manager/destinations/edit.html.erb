@@ -1,0 +1,35 @@
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	<h4 class="modal-title">Edit Country</h4>
+</div>
+<%= form_for(@destination, url: url_for(controller: "manager/destinations", action: "update"), remote: true, method: :patch, html: {id: 'edit_form', class: 'create_record_form'})  do |f| %>
+	<%= f.hidden_field :id %>
+	<%= f.hidden_field :d_type %>
+	<div class="modal-body">
+		<div class="row">
+		  	<label class="col-sm-2">Country Name</label>
+		  	<div class="col-sm-6">
+		  		<%= f.text_field :destination_name, :class => 'form-control page-addform_feild', :placeholder => 'Enter Country Name' %>
+		  	</div>
+		    <div class="col-sm-4 js_error_container">               
+		    </div>
+		</div>
+		<div class="row">
+	  		<label class="col-sm-2">Status</label>
+	  		<div class="col-sm-6">
+	  			<%= f.check_box :status, {:class => 'outline-switcher', "data-class" => "switcher-sm"}, "1", "2" %>
+	  		</div>
+	  	</div>
+	  <!-- <input type="checkbox" data-class="switcher-sm checked" class="outline-switcher"> -->
+	</div>
+	<div class="modal-footer">
+	  <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+	  <button class="btn btn-primary" type="submit">Save changes</button>
+	</div>
+<% end %>
+<script type="text/javascript">
+ 	$('.outline-switcher').switcher({
+      on_state_content: '<span class="fa fa-check" style="font-size:11px;"></span>',
+      off_state_content: '<span class="fa fa-times" style="font-size:11px;"></span>'
+    });
+</script>

@@ -1,0 +1,706 @@
+<%= javascript_include_tag 'manager_js/jquery.slimscroll.min' %>
+<% content_for :header do %>
+	<h1 class="col-xs-12 col-sm-8 text-center text-left-sm"><i class="fa fa-money page-header-icon"></i>&nbsp;&nbsp;Feed Rates - <%= @rate_master.name.html_safe %>
+  </h1>
+  <%= link_to "GO BACK", manager_rate_masters_path, :class => 'add-new_btn btn btn-page-back col-sm-1' %>
+<% end %>
+<div class="row">
+    <div class="col-xs-12">
+    <form id="js_network_zoning_form" action="javascript:void(0)">
+        <%= hidden_field_tag "rate[rate_master_id]", @rate_master.id, id: "js_rate_master_id"  %>
+        <div class="box">
+            <div class="box-body bg-white-15-0">
+                <div class="col-xs-12 rate-page-sub-head">
+                    MANAGE RATES
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2">Rate Master</label>
+                    <label class="col-xs-10">
+                        <%= @rate_master.name.html_safe %>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2">Feed Rate </label>
+                    <div class="col-xs-10 form-inline">
+                        <div class="radio wd_100">
+                            <input type="radio" name="rate[feed_rate_for]" id="FeedRateFor1" class="form-control js_country_zone" value="1">
+                            <label for="FeedRateFor1">Zonewise</label>
+                            <%= select_tag "rate[zone_id]", options_from_collection_for_select(@selected_zone_list, 'zone_id', 'zone_name'), :class => 'form-control pull-left mar-right-20 js_country_zone_change', :id => 'zone_id', :style => 'display:none;', :include_blank => "Select Zone" %>
+
+                            <input type="radio" name="rate[feed_rate_for]" id="FeedRateFor2" class="form-control js_country_zone" value="2">
+                            <% if @rate_master.network.network_type == APP_CONFIG['des_type']['Intl'] %>
+                                <label for="FeedRateFor2">Countrywise</label>
+                                <%= select_tag "rate[country_id][]", options_for_select(@countries), :class => ' js_country_zone_change col-xs-6',:id => 'country_id', :style => 'display:none;', :multiple => 'multiple', :include_blank => false %>
+                            <% else %>
+                                <label for="FeedRateFor2">Citywise</label>
+                                <%= select_tag "rate[country_id][]", grouped_options_for_select(@city_list), :class => ' js_country_zone_change col-xs-6',:id => 'country_id', :style => 'display:none;', :multiple => 'multiple', :include_blank => "Select City" %>
+                            <% end %> 
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0px;">
+                    <label class="col-xs-2"></label>
+                    <div id="js_country_zone_error" style="display:none" class="col-xs-4 error-message">Please select.</div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2">Delivery days</label>
+                    <div class="col-xs-3">
+                        <%= select_tag "rate[dely_days]", options_for_select(APP_CONFIG['delivery_days'].map{|days| [ days[1], days[0] ]}), :class => 'form-control pull-left', :id => 'dely_days', :include_blank => "Select Delivery Days" %>
+                    </div>
+                </div>
+
+                <div class="page-seprater"></div>
+                <div class="col-xs-12 rate-page-sub-head">FEED RATE HERE</div>
+                
+                <div class="form-group">
+                    <label class="pull-center col-xs-6">Flat Rate</label>
+                    <label class="pull-center col-xs-6">Per KG Rate</label>
+                </div>
+                <div style="margin-bottom:0px;" class="form-group">
+                    <div style="border-right:2px solid #ddd; padding-bottom:30px;" class="col-xs-6">
+                        <div class="series-div">
+                            <label>Start</label><br>
+                            <input type="text" id="js_flat_start">
+                        </div>
+                        <div class="series-div">
+                            <label>End</label><br>
+                            <input type="text" id="js_flat_end">
+                        </div>
+                        <div class="series-div">
+                            <label>Variance</label><br>
+                            <select id="js_flat_diff" name="rate[flat_difference]">
+                                <option value="0.099">100 GMS</option>
+                                <option value="0.249">250 GMS</option>
+                                <option value="0.499">500 GMS</option>
+                                <option value="0.999">1 KG</option>
+                            </select>
+                        </div>
+                        <div class="series-div">
+                            <label>Remarks</label> <br>
+                            <textarea class="opened-textarea" id="js_flat_remarks"></textarea>
+                        </div>
+                        <div class="series-div">
+                            <button id="js_flat_generate" class="btn btn-success mar-top-30">Generate</button>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="series-div">
+                            <label>Start</label> <br>
+                            <input type="text" id="js_perkg_start">
+                        </div>
+                        <div class="series-div">
+                            <label>End</label> <br>
+                            <input type="text" id="js_perkg_end">
+                        </div>
+                        <div class="series-div">
+                            <label>Variance</label> <br>
+                            <select id="js_perkg_diff" name="rate[perkg_difference]">
+                                <option value="0.999">1 KG</option>
+                                <option value="4.999">5 KG</option>
+                                <option value="9.999">10 KG</option>
+                                <option value="19.999">20 KG</option>
+                            </select>
+                        </div>
+                        <div class="series-div">
+                            <label>Remarks</label> <br>
+                            <textarea class="opened-textarea" id="js_perkg_remarks"></textarea>
+                        </div>
+                        <div class="series-div">
+                        <button id="js_perkg_generate" class="btn btn-success mar-top-30">Generate</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="js_rate_container" class="form-group">
+                    <div style="border-right:2px solid #ddd;" class="col-xs-6">
+                        <div class="jq_feed_rate" style="overflow: hidden; width: 100%; height: 400px;">
+                            <table class="table table-condensed scroll">
+                                <thead>
+                                    <tr>
+                                        <th width="5%" align="center">#</th>
+                                        <th width="12%" align="center">Start</th>
+                                        <th width="12%" align="center">End</th>
+                                        <th width="12%" align="center">Rate</th>
+                                        <th align="center">Remarks</th>
+                                        <th width="20%" align="right">
+                                            <button id="js_flat_add_row" class="btn btn-default btn-sm pull-right">+ Add Row</button>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="rate-table" id="js_flat_rates_body">
+                                    <!-- <tr>
+                                        <td>1</td>
+                                        <td><input type="text" value="0.001" class="txt-field" name="data[Rate][Flat_weight_start][]">
+                                        </td>
+                                        <td><input type="text" value="0.500" class="txt-field" name="data[Rate][Flat_weight_end][]"></td>
+                                        <td><input type="text" value="933" class="txt-field" name="data[Rate][Flat_rate][]">
+                                        </td>
+                                        <td><textarea class="txt-field txt-field-2" name="data[Rate][Flat_comment][]">X-JAIPUR</textarea></td>
+                                        <td align="right"> <a class="up mar-right-15" href="javascript:void(0)"><i class="fa fa-chevron-up"></i></a><a class="down mar-right-15" href="javascript:void(0)"><i class="fa fa-chevron-down"></i></a><a class="js_remove_row" href="javascript:void(0)"><i class="fa fa-trash-o"></i></a>
+                                        </td>
+                                    </tr> -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+
+                        <div class="jq_feed_rate" style="overflow: hidden; width: 100%; height: 400px;">
+                            <table class="table table-condensed  scroll">
+                                <thead>
+                                    <tr>
+                                        <th width="5%" align="center">#</th>
+                                        <th width="12%" align="center">Start</th>
+                                        <th width="12%" align="center">End</th>
+                                        <th width="12%" align="center">Rate</th>
+                                        <th align="center">Remarks</th>
+                                        <th width="20%" align="right">
+                                            <button id="js_perkg_add_row" class="btn  btn-default btn-sm pull-right">+ Add Row</button>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="rate-table" id="js_perkg_rates_body">
+                                    <!-- <tr>
+                                        <td>1</td>
+                                        <td><input type="text" value="10.001" class="txt-field" name="data[Rate][Perkg_weight_start][]"></td>
+                                        <td><input type="text" value="15.000" class="txt-field" name="data[Rate][Perkg_weight_end][]"></td>
+                                        <td><input type="text" value="251" class="txt-field" name="data[Rate][Perkg_rate][]"></td>
+                                        <td><textarea class="txt-field txt-field-2" name="data[Rate][Perkg_comment][]">X-JAIPUR</textarea></td>
+                                        <td align="right"> <a class="up mar-right-15" href="javascript:void(0)"><i class="fa fa-chevron-up"></i></a><a class="down mar-right-15" href="javascript:void(0)"><i class="fa fa-chevron-down"></i></a><a class="js_remove_row" href="javascript:void(0)"><i class="fa fa-trash-o"></i></a>
+                                        </td>
+                                    </tr> -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                 <div class="margin-top_30 form-group pull-center">
+                   <button id="js_save_rate" class="btn btn-primary">Save</button>&nbsp;&nbsp;
+                   <%= link_to "Cancel", manager_rate_masters_path, :class => 'btn btn-page-back' %>
+                   <div id="js_no_row_error" style="display:none" class="error-message">Please enter rate.</div>
+                </div>
+
+                <div class="page-seprater"></div>
+                <div class="col-xs-12 rate-page-sub-head">FEEDED RATES WILL APPEAR HERE</div>
+
+                <div class="form-group">
+                    <div class="col-md-6">
+                        <label class="col-xs-8">Zone List</label>
+                        <label class="col-xs-4">
+                            <span>Show</span> | <span>Hide</span>
+                        </label>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="col-xs-8">Country List</label>
+                        <label class="col-xs-4">
+                            <span>Show</span> | <span>Hide</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-6">
+                        <div class="jq_feeded_list" id="feed_zone">
+                            <%= render 'master_list', :type => "Zone" %>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="jq_feeded_list" id="feed_country">
+                            <%= render 'master_list', :type => "Country" %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.box -->
+    </form>
+    </div>
+</div>
+<script language="javascript" type="text/javascript">
+    var $country_id = $("#country_id").select2({
+                        placeholder: "Please Select"
+                    });
+
+    $('.jq_feeded_list').slimScroll({
+        height: '150px',
+        width:'100%'
+    });
+
+    $('.jq_feed_rate1').slimScroll({
+        height: '400px',
+        width:'100%'
+    });
+    $(".js_country_zone").change(function(){
+        if($(this).val() == 1){
+            $("#zone_id").show();
+            $("#s2id_country_id").hide();
+        }else{
+            $("#zone_id").hide();
+            $("#s2id_country_id").show();
+        }
+    });
+    
+    $('#js_rate_container').on("click", ".up,.down", function(){
+        var row = $(this).parents("tr:first");
+        if ($(this).is(".up")) {
+            row.insertBefore(row.prev());
+        } else {
+            row.insertAfter(row.next());
+        }
+    });
+
+    $('#js_rate_container').on("focus", "textarea", function(){
+        $(this).addClass('opened-textarea');
+    });
+    $('#js_rate_container').on("blur", "textarea", function(){
+        $(this).removeClass('opened-textarea');
+    });
+    $('#js_rate_container').on("click", ".js_remove_row", function(){
+        var t = this;
+        jConfirm('Are you sure, you want to delete this row?', 'Confirmation Dialog', function(r) {
+        if(r==true){
+            $(t).parents('tr:first').remove();
+        }
+      });
+
+    });
+    $("#js_flat_generate").click(function(){
+        var validate_fields = true;
+        var flat_start = $("#js_flat_start").val(),
+            flat_end = $("#js_flat_end").val(),
+            flat_diff = $("#js_flat_diff").val(); 
+        if(!$.isNumeric(flat_start)) {
+            $("#js_flat_start").css('border-color',"#fb6b5b");
+            validate_fields = false;
+        }else{
+            $("#js_flat_start").css('border-color',"#ccc");
+        }
+        if(!$.isNumeric(flat_end)) {
+            $("#js_flat_end").css('border-color',"#fb6b5b");
+            validate_fields = false;
+        }else{
+            $("#js_flat_end").css('border-color',"#ccc");
+        }
+        if(validate_fields){
+            var new_rows ="";
+            if(parseFloat(flat_start) % 1 === 0){
+                flat_start = parseFloat(flat_start) + 0.001;
+            }
+            flat_diff = parseFloat(flat_diff);
+            flat_end = parseFloat(flat_end);
+            var row_no=$("#js_flat_rates_body tr").length+1;
+            for(var i = parseFloat(flat_start),row_no; i<flat_end;i=i+flat_diff+0.001,row_no++){
+                new_rows += rate_row_template(row_no,i.toFixed(3),parseFloat(i+flat_diff).toFixed(3),"",$("#js_flat_remarks").val());
+            }                
+            $("#js_flat_rates_body").append(new_rows);
+            rate_table_width();
+        }
+    });
+    $("#js_flat_add_row").click(function(){
+        var row_no=$("#js_flat_rates_body tr").length+1;
+        $("#js_flat_rates_body").append(rate_row_template(row_no,"","","",""));
+        rate_table_width();
+    });
+
+    $("#js_perkg_generate").click(function(){
+        var validate_fields = true;
+        var perkg_start = $("#js_perkg_start").val(),
+            perkg_end = $("#js_perkg_end").val(),
+            perkg_diff = $("#js_perkg_diff").val(); 
+        if(!$.isNumeric(perkg_start)) {
+            $("#js_perkg_start").css('border-color',"#fb6b5b");
+            validate_fields = false;
+        }else{
+            $("#js_perkg_start").css('border-color',"#ccc");
+        }
+        if(!$.isNumeric(perkg_end)) {
+            $("#js_perkg_end").css('border-color',"#fb6b5b");
+            validate_fields = false;
+        }else{
+            $("#js_perkg_end").css('border-color',"#ccc");
+        }
+        if(validate_fields){
+            var new_rows ="";
+            if(parseFloat(perkg_start) % 1 === 0){
+                perkg_start = parseFloat(perkg_start) + 0.001;
+            }
+            perkg_diff = parseFloat(perkg_diff);
+            perkg_end = parseFloat(perkg_end);
+            var row_no=$("#js_perkg_rates_body tr").length+1;
+            for(var i = parseFloat(perkg_start),row_no; i<perkg_end;i=i+perkg_diff+0.001,row_no++){
+                new_rows += rate_row_template_perkg(row_no,i.toFixed(3),parseFloat(i+perkg_diff).toFixed(3),"",$("#js_perkg_remarks").val());
+            }                
+            $("#js_perkg_rates_body").append(new_rows);
+            rate_table_width();
+        }
+    });
+    $("#js_perkg_add_row").click(function(){
+        var row_no=$("#js_perkg_rates_body tr").length+1;
+        $("#js_perkg_rates_body").append(rate_row_template_perkg(row_no,"","","",""));
+        rate_table_width();
+    });
+
+    function rate_row_template(number,flat_start,flat_end,rate_field,comment_field){
+        var template = '<tr><td>NUMBER</td><td><input type="text" name="rate[flat_weight_start][]" class="txt-field" value="RATE_START"></td><td><input type="text" name="rate[flat_weight_end][]" class="txt-field" value="RATE_END"></td><td><input type="text" name="rate[flat_rate][]" class="txt-field" value="RATE_FIELD"></td><td><textarea name="rate[flat_comment][]" class="txt-field txt-field-2">COMMENT_FIELD</textarea></td><td align="right"> <a href="javascript:void(0)" class="up mar-right-15"><i class="fa fa-chevron-up"></i></a><a href="javascript:void(0)" class="down mar-right-15"><i class="fa fa-chevron-down"></i></a><a href="javascript:void(0)" class="js_remove_row"><i class="fa fa-trash-o"></i></a></td></tr>';
+
+        template = template.replace("NUMBER",number);
+        template = template.replace("RATE_START",flat_start);
+        template = template.replace("RATE_END",flat_end);
+        template = template.replace("RATE_FIELD",rate_field);
+        template = template.replace("COMMENT_FIELD",comment_field);
+        return template;
+    }
+
+    function rate_row_template_perkg(number,perkg_start,perkg_end,rate_field,comment_field){
+        var template = '<tr><td>NUMBER</td><td><input type="text" name="rate[perkg_weight_start][]" class="txt-field" value="RATE_START"></td><td><input type="text" name="rate[perkg_weight_end][]" class="txt-field" value="RATE_END"></td><td><input type="text" name="rate[perkg_rate][]" class="txt-field" value="RATE_FIELD"></td><td><textarea name="rate[perkg_comment][]" class="txt-field txt-field-2">COMMENT_FIELD</textarea></td><td align="right"> <a href="javascript:void(0)" class="up mar-right-15"><i class="fa fa-chevron-up"></i></a><a href="javascript:void(0)" class="down mar-right-15"><i class="fa fa-chevron-down"></i></a><a href="javascript:void(0)" class="js_remove_row"><i class="fa fa-trash-o"></i></a></td></tr>';
+
+        template = template.replace("NUMBER",number);
+        template = template.replace("RATE_START",perkg_start);
+        template = template.replace("RATE_END",perkg_end);
+        template = template.replace("RATE_FIELD",rate_field);
+        template = template.replace("COMMENT_FIELD",comment_field);
+        return template;
+    }
+
+    var all_rates_array = [];
+    $("#js_save_rate").click(function(){
+        ajax_loader('show');
+        $("#js_flat_rates_body").find('td').removeClass('bottom-border-err');
+        $("#js_perkg_rates_body").find('td').removeClass('bottom-border-err');
+        var error_exist = false;
+        if($(".js_country_zone:checked").val() == undefined){
+            error_exist = true;
+            $("#js_country_zone_error").show();
+        }else{
+            $("#js_country_zone_error").hide();
+            if($(".js_country_zone:checked").val() == '1' && $("#zone_id").val()==""){
+                $("#zone_id").css('border-color','#900');
+                error_exist = true;
+            }else{
+                $("#zone_id").css('border-color','#ccc');
+            }
+
+            if($(".js_country_zone:checked").val() == '2' && $("#country_id").val()==null){
+                $("#s2id_country_id").css('border','1px solid #900');
+                error_exist = true;
+            }else{
+                $("#s2id_country_id").css('border','none');
+            }
+        }
+
+        if($("#dely_days").val()==""){
+            $("#dely_days").css('border-color','#900');
+            error_exist = true;
+        }else{
+            $("#dely_days").css('border-color','#ccc');
+        }
+
+        if($('#js_flat_rates_body tr').length < 1 && $('#js_perkg_rates_body tr').length < 1){
+            $("#js_no_row_error").show();
+            error_exist = true;
+        }else{
+            $("#js_no_row_error").hide();
+        }
+        all_rates_array = [];
+        $('#js_flat_rates_body tr').each(function(){
+            start_val = $.trim($(this).find('input:first').val());
+            row_validated = true;
+            if(start_val == "" || !$.isNumeric(start_val)){
+                error_exist = true;
+                $(this).find('input:first').css({'border-color':'#900'});
+                row_validated = false;
+            }else{
+                $(this).find('input:first').css({'border-color':'#ccc'});
+            }
+
+            end_val = $.trim($(this).find('input:eq(1)').val());
+            if(end_val == "" || !$.isNumeric(end_val) || parseFloat(start_val) >= parseFloat(end_val)){
+                error_exist = true;
+                $(this).find('input:eq(1)').css({'border-color':'#900'});
+                row_validated = false;
+            }else{
+                $(this).find('input:eq(1)').css({'border-color':'#ccc'});
+            }
+            if(row_validated){
+                combined_string = parseFloat(start_val).toFixed(3)+'-'+parseFloat(end_val).toFixed(3);
+                getIndex = $.inArray(combined_string,all_rates_array);
+                if(getIndex < 0){
+                    $(this).find('td').removeClass('bottom-border-err');
+                    all_rates_array.push(combined_string);
+                }else{
+                    $(this).find('td').addClass('bottom-border-err');
+                }
+            }
+        });
+
+        $('#js_perkg_rates_body tr').each(function(){
+            start_val = $.trim($(this).find('input:first').val());
+            row_validated = true;
+            if(start_val == "" || !$.isNumeric(start_val)){
+                error_exist = true;
+                $(this).find('input:first').css({'border-color':'#900'});
+                row_validated = false;
+            }else{
+                $(this).find('input:first').css({'border-color':'#ccc'});
+            }
+
+            end_val = $.trim($(this).find('input:eq(1)').val());
+            if(end_val == "" || !$.isNumeric(end_val) || parseFloat(start_val) >= parseFloat(end_val)){
+                error_exist = true;
+                $(this).find('input:eq(1)').css({'border-color':'#900'});
+                row_validated = false;
+            }else{
+                $(this).find('input:eq(1)').css({'border-color':'#ccc'});
+            }
+            if(row_validated){
+                combined_string = parseFloat(start_val).toFixed(3)+'-'+parseFloat(end_val).toFixed(3);
+                getIndex = $.inArray(combined_string,all_rates_array);
+                if(getIndex < 0){
+                    $(this).find('td').removeClass('bottom-border-err');
+                    all_rates_array.push(combined_string);
+                }else{
+                    $(this).find('td').addClass('bottom-border-err');
+                }
+            }
+        });
+
+        if(!error_exist){
+            var frmData = $("#js_network_zoning_form").serialize(); 
+            //console.log(frmData); return;
+            $.ajax({
+                type: "POST",
+                async: true,
+                url: managerPluginUrl+'rates/save_rates',
+                data: frmData,
+                dataType: 'json',
+                error: function(a,b,c) {
+                    //alert('Unable to process request. - ' + a);
+                    ajax_loader('hide');
+                },              
+                success: function (data) {
+                    if(data.status == 1){
+                        $("#js_success").attr("data-text",data.success_message)
+                        $("#js_success").trigger("click");
+                        $('.js_country_zone').prop('checked', false);
+                        $('#zone_id').prop('selectedIndex',0).hide();
+                        $("#dely_days").val("");
+                        $country_id.val(null).trigger("change");
+                        $("#s2id_country_id").hide();
+                        //$('#country_id').prop('selectedIndex',0).hide();
+                        $('#js_flat_rates_body').html("");
+                        $('#js_perkg_rates_body').html("");
+                        $('.series-div > input[type="text"]').val("");  
+                        $('#js_flat_remarks, #js_perkg_remarks').val("");
+                        $('#js_flat_diff, #js_perkg_diff').prop('selectedIndex',0);
+                        load_master_list(data.feed_for);
+                    }else{
+                        $.each(data.error_messages,function(index,item){
+                            if(item.type == 'flat_rate'){
+                                $("#js_flat_rates_body").find('tr:eq('+item.row_no+') > td').addClass('bottom-border-err');
+                            }else{
+                                $("#js_perkg_rates_body").find('tr:eq('+item.row_no+') > td').addClass('bottom-border-err');
+                            }
+                        });
+                    }
+                    ajax_loader('hide');
+                }
+            });
+        }else{
+            ajax_loader('hide');
+        }
+    });
+
+    $('body').on("click", ".js_edit_zone,.js_edit_destination", function(){
+        ajax_loader('show');
+        if($(this).hasClass('js_edit_zone')){
+            var edit_type = '1';
+            var zone_id = $(this).attr('js_zone_id');
+            var frmData = {'edit_type':edit_type,'zone_id':zone_id,'rate_master_id':$("#js_rate_master_id").val()};
+            $('.js_country_zone[value="1"]').prop('checked', true).trigger('change');
+            $("#zone_id").val(zone_id);
+        }else{
+            var edit_type = '2';
+            var dest_id = [$(this).attr('js_dest_id')];
+            var frmData = {'edit_type':edit_type,'dest_id':dest_id,'rate_master_id':$("#js_rate_master_id").val()};
+            $('.js_country_zone[value="2"]').prop('checked', true).trigger('change');
+            $country_id.val([dest_id]).trigger("change");
+            return false;
+            //$("#country_id option[value='"+country_id+"']").attr("selected", "selected");
+        }
+
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: managerPluginUrl+'rates/load_rates',
+            data: frmData,
+            dataType: 'json',
+            error: function(a,b,c) {
+                alert('Unable to process request. - ' + a);
+                ajax_loader('hide');
+            },              
+            success: function (data) {
+                if(data.status == 1){
+                    var new_rows ="";
+                    var dely_day1 = dely_day2 = -1;
+                    $.each(data.flat_list,function(index,item){
+                        dely_day1 = item.dely_1
+                        dely_day2 = item.dely_2
+                        new_rows += rate_row_template(index+1,item.weight_from,item.weight_to,item.rate,item.remarks);
+                    });
+                    $("#js_flat_rates_body").html(new_rows);
+
+                    var new_rows ="";
+                    $.each(data.perkg_list,function(index,item){
+                        dely_day1 = item.dely_1
+                        dely_day2 = item.dely_2
+                        new_rows += rate_row_template_perkg(index+1,item.weight_from,item.weight_to,item.rate,item.remarks);
+                    });
+                    
+                    if(dely_day2 != -1 && dely_day1 != -1){
+                        dely_day = dely_day1+"-"+dely_day2;
+                        $("#dely_days").val(dely_day);
+                    }
+                    $("#js_perkg_rates_body").html(new_rows);
+                    $("#country_id").val("");
+                    $("#country_id").val(dest_id);
+                    rate_table_width();
+                }
+                ajax_loader('hide');
+            }
+        });
+    });
+
+    $('body').on("click", ".js_delete_zone,.js_delete_destination", function(){
+        if($(this).hasClass('js_delete_zone')){
+            var edit_type = '1';
+            var zone_id = $(this).attr('js_zone_id');
+            var frmData = {'edit_type':edit_type,'zone_id':zone_id,'rate_master_id':$("#js_rate_master_id").val()};
+        }else{
+            var edit_type = '2';
+            var dest_id = $(this).attr('js_dest_id');
+            var frmData = {'edit_type':edit_type,'dest_id':dest_id,'rate_master_id':$("#js_rate_master_id").val()};
+        }
+        var t = this;
+        jConfirm('Are you sure, you want to delete this rate?', 'Confirmation Dialog', function(r) {
+            if(r==true){
+                ajax_loader('show');
+                $.ajax({
+                    type: "POST",
+                    async: true,
+                    url: managerPluginUrl+'rates/delete_rates',
+                    data: frmData,
+                    dataType: 'json',
+                    error: function(a,b,c) {
+                        alert('Unable to process request. - ' + a);
+                        ajax_loader('hide');
+                    },              
+                    success: function (data) {
+                        if(data.status == 1){
+                            $(t).parents('tr:first').remove();
+                        }
+                        ajax_loader('hide');
+                    }
+                });
+            }
+        });
+    });
+
+    $('.js_country_zone_change').change(function(){
+        ajax_loader('show');
+        if($(this).attr('id') == 'zone_id'){
+            var edit_type = '1';
+            var zone_id = $(this).val();
+            if(zone_id == null || zone_id == "" || zone_id == undefined){
+                return false;
+            }
+            var frmData = {'edit_type':edit_type,'zone_id':zone_id,'rate_master_id':$("#js_rate_master_id").val()};
+        }else{
+            var edit_type = '2';
+            var dest_id = $(this).val();
+            if(dest_id == null || dest_id == "" || dest_id == undefined){
+                return false;
+            }
+            if(dest_id.length > 1){
+                return false;
+            }
+            var frmData = {'edit_type':edit_type,'dest_id':dest_id,'rate_master_id':$("#js_rate_master_id").val()};
+        }
+
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: managerPluginUrl+'rates/load_rates',
+            data: frmData,
+            dataType: 'json',
+            error: function(a,b,c) {
+                alert('Unable to process request. - ' + a);
+                ajax_loader('hide');
+            },              
+            success: function (data) {
+                if(data.status == 1){
+                    var new_rows ="";
+                    var dely_day1 = dely_day2 = -1;
+                    $.each(data.flat_list,function(index,item){
+                        dely_day1 = item.dely_1
+                        dely_day2 = item.dely_2
+                        new_rows += rate_row_template(index+1,item.weight_from,item.weight_to,item.rate,item.remarks);
+                    });
+                    $("#js_flat_rates_body").html(new_rows);
+
+                    var new_rows ="";
+                    $.each(data.perkg_list,function(index,item){
+                        dely_day1 = item.dely_1
+                        dely_day2 = item.dely_2
+                        new_rows += rate_row_template_perkg(index+1,item.weight_from,item.weight_to,item.rate,item.remarks);
+                    });
+                    if(dely_day2 != -1 && dely_day1 != -1){
+                        dely_day = dely_day1+"-"+dely_day2;
+                        $("#dely_days").val(dely_day);
+                    }
+                    $("#js_perkg_rates_body").html(new_rows);
+                    rate_table_width();
+                }
+                ajax_loader('hide');
+            }
+        });
+    });
+
+    function load_master_list(feed_for){
+        frmData = {"rate_master_id":$("#js_rate_master_id").val(),'feed_for':feed_for};
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: managerPluginUrl+'rates/load_master_list',
+            data: frmData,
+            dataType: 'script',
+            error: function(a,b,c) {
+                //alert('Unable to process request. - ' + a);
+                //ajax_loader('hide');
+            },              
+            success: function (data) {
+                // if(data.success == 1){
+                //     if(data.updateType){
+                        
+                //     }
+                // }
+            }
+        });
+    }
+function rate_table_width(){
+    // Change the selector if needed
+    var $table = $('table.scroll'),
+        $bodyCells = $table.find('tbody tr:first').children(),
+        colWidth;
+
+    // Adjust the width of thead cells when window resizes
+    $(window).resize(function() {
+        // Get the tbody columns width array
+        colWidth = $bodyCells.map(function() {
+            return $(this).width();
+        }).get();
+        
+        // Set the width of thead columns
+        $table.find('thead tr').children().each(function(i, v) {
+            $(v).width(colWidth[i]);
+        });    
+    }).resize(); // Trigger resize handler
+}
+rate_table_width();
+</script>

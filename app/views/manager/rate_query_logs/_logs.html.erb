@@ -1,0 +1,40 @@
+<table class="table table-hover" id="jq-datatables-example1">
+	<thead>
+		<tr>
+			<th> <%= sortable "rate_query_logs.user_type", "Type" %> </th>
+			<th> <%= sortable "rate_query_logs.user_type", "Name" %> </th>
+			<th> <%= sortable "destination.destination_name", "Destination" %> </th>
+			<th> Weight </th>
+			<th> Package </th>
+			<th> Session Count </th>
+			<th> Date/Time </th>
+		</tr>
+	</thead>
+	<tbody>
+	<% if @logs.total_count > 0
+		for log in @logs %>
+		<tr>
+			<td><%= log.user_type %></td>
+			<td>Mukesh</td>
+			<td><%= log.destination.destination_name %></td>
+			<td><%= log.weight %></td>
+			<td><%= APP_CONFIG['packet_type_id'][log.packet_type] %></td>
+			<td>
+				<% if log.group_count > 1 %>
+				<%= link_to log.group_count, url_for(controller: "manager/rate_query_logs", action: "session_records", id: log.group_id), :class => 'js_show_session', :remote => true, :title => 'See all records', :group_id => log.group_id %>
+				<% else %>
+				<%= log.group_count %>
+				<% end %>
+			</td>
+			<td><%= Time.at(log.created_at).to_s(:long) %></td>
+		</tr>
+	<% end
+	else %>
+		<tr>
+			<td colspan="3" align="center">No records found.</td>
+		</tr>
+	<% end %>
+	</tbody>
+</table>
+
+	<%= render 'manager/shared/manager_pagination', :records => @logs %>

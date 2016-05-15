@@ -1,0 +1,24 @@
+<tr class="no-hover">
+  <td colspan="7">
+    <table class="table">
+      <tbody>
+  <% if @grouped_logs.length > 0
+      for log in @grouped_logs %>
+      <tr>
+        <td><%= log.user_type %></td>
+        <td>Mukesh</td>
+        <td><%= log.destination.destination_name %></td>
+        <td><%= log.weight %></td>
+        <td><%= APP_CONFIG['packet_type_id'][log.packet_type] %></td>
+        <td><%= Time.at(log.created_at).to_s(:long) %></td>
+      </tr>
+    <% end
+    else %>
+      <tr>
+        <td colspan="3" align="center">No records found.</td>
+      </tr>
+    <% end %>
+      </tbody>
+    </table>
+  </td>
+</tr>

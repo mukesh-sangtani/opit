@@ -1,0 +1,49 @@
+<table class="table table-hover" id="jq-datatables-example1">
+	<thead>
+		<tr>
+			<th> <%= sortable "rate_masters.name","Name" %> </th>
+			<th> <%= sortable "networks.network_name","Network" %> </th>
+			<th> <%= sortable "networks.category_id","Category" %> </th>
+			<th> <%= sortable "rate_masters.fuel", "Fuel" %> </th>
+			<th> S. Tax </th>
+			<% if @admin_user.admin_type == APP_CONFIG['admin_type']['Admin'] %>
+				<th> Margin Type </th>
+				<th> <%= sortable "rate_masters.margin","Cr. Margin" %> </th>
+				<th> <%= sortable "rate_masters.margin_two","Cash Margin" %> </th>
+			<% end %>
+			<th> Action </th>
+		</tr>
+	</thead>
+	<tbody>
+	<% for rate_master in @rate_masters %>
+		<tr>
+			<td><%= rate_master.name.html_safe %></td>
+			<td><%= rate_master.network.network_name %></td>
+			<td><%= APP_CONFIG['rate_master_category_id'][rate_master.category_id] %></td>
+			<td><%= rate_master.fuel %>%</td>
+			<td><%= APP_CONFIG['state_id'][rate_master.s_tax] %></td>
+			<% if @admin_user.admin_type == APP_CONFIG['admin_type']['Admin'] %>
+				<td><%= APP_CONFIG['margin_type_id'][rate_master.margin_type] %></td>
+				<td><%= rate_master.margin %></td>
+				<td><%= rate_master.margin_two %></td>
+			<% end %>
+			<td>
+				<%= link_to content_tag(:i ,"",:class => "fa fa-pencil"), edit_manager_rate_master_path(rate_master.id), {"title" => 'Edit'} %> &nbsp;&nbsp;
+				<% if @admin_user.admin_type == APP_CONFIG['admin_type']['Admin'] %>
+					<%= link_to content_tag(:i ,"",:class => "fa fa-inr"), url_for(:controller => "manager/rate_masters", :action => "edit_margins", :id => rate_master.id), {"title" => 'Edit Margins'} %> &nbsp;&nbsp;
+				<% end %>
+				<%= (rate_master.status == APP_CONFIG['status']['Active']) ? link_to(content_tag(:i ,"",:class => "fa fa-eye"),url_for(controller: "manager/rate_masters", action: "change_status", id: rate_master.id), :class => 'js_change_status', :remote => true,:title => 'Active; Mark as inactive') : link_to(content_tag(:i ,"",:class => "fa fa-eye-slash grey"),url_for(controller: "manager/rate_masters", action: "change_status", id: rate_master.id),:class => 'js_change_status', :remote => true,:title => 'Inactive; Mark as active') %> &nbsp;&nbsp;
+
+				<%= (rate_master.show_to_client == APP_CONFIG['state']['Enabled']) ? link_to(content_tag(:i ,"",:class => "fa fa-check-circle-o"),url_for(controller: "manager/rate_masters", action: "update_show_to_client", id: rate_master.id), :class => 'js_change_status', :remote => true,:title => 'Visible to Client; Click to Change') : link_to(content_tag(:i ,"",:class => "fa fa-ban grey"),url_for(controller: "manager/rate_masters", action: "update_show_to_client", id: rate_master.id),:class => 'js_change_status', :remote => true,:title => 'Hidden from Client; Click to Change') %> &nbsp;&nbsp;
+				
+				<%= link_to content_tag(:i ,"",:class => "fa fa-trash-o"),manager_rate_master_path(rate_master.id),:title => 'Delete',:class => 'js_delete_item',:remote => true,:method => :delete, :data => {:confirm => "Are you sure, yuo want to delete this network?"} %>&nbsp;&nbsp;
+
+
+				<%= link_to content_tag(:i ,"",:class => "fa fa-gears"),{:controller => 'manager/rates', :action => 'manage_rates', :id => rate_master.id}, :title => 'Manage Rates', :remote => false %>
+			</td>
+		</tr>
+	<% end %>
+	</tbody>
+</table>
+
+<%= render 'manager/shared/manager_pagination', :records => @rate_masters %>

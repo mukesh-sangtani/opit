@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!--[if IE 8]>         <html class="ie8"> <![endif]-->
+<!--[if IE 9]>         <html class="ie9 gt-ie8"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="gt-ie8 gt-ie9 not-ie"> <!--<![endif]-->
+<head>
+	<%= stylesheet_link_tag  'manager', media: 'all', 'data-turbolinks-track' => true %>
+	<%= javascript_include_tag 'manager', 'data-turbolinks-track' => true %>
+  	<%= csrf_meta_tags %>
+  	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>Manager</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	<!-- Open Sans font from Google CDN -->
+	<!-- <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin" rel="stylesheet" type="text/css"> -->
+
+	<!-- Pixel Admin's stylesheets -->
+	<!-- <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="css/pixel-admin.min.css" rel="stylesheet" type="text/css">
+	<link href="css/widgets.min.css" rel="stylesheet" type="text/css">
+	<link href="css/rtl.min.css" rel="stylesheet" type="text/css">
+	<link href="css/themes.min.css" rel="stylesheet" type="text/css">
+	<link href="css/style.css" rel="stylesheet" type="text/css"> -->
+	<!--
+		<script src="assets/javascripts/ie.min.js"></script>
+	-->
+</head>
+
+<body class="theme-default main-menu-animated">
+<!-- <div id="preloader"></div> -->
+<script type="text/javascript">
+	var init = [];
+	var managerPluginUrl = '/manager/';
+</script>
+
+<div id="main-wrapper">
+	<%= render 'manager/shared/header' %>
+
+	<%= render 'manager/shared/left' %>
+
+	<div id="content-wrapper">
+		<div id="pa-page-alerts-box">
+			<% flash.each do |key, value| %>
+				<div class="alert alert-page pa_page_alerts_default alert-<%= key %>" data-animate="true" style=""><button class="close" type="button">×</button>
+					<%= value.html_safe %>
+				</div>
+		  	<% end %>
+		</div>
+		<!-- <ul class="breadcrumb breadcrumb-page">
+			<div class="breadcrumb-label text-light-gray">You are here: </div>
+			<li><a href="#">Home</a></li>
+			<li class="active"><a href="#">Dashboard</a></li>
+		</ul> -->
+		<div class="page-header">
+			<div class="row">
+				<!-- Page header, center on small screens -->
+				<%= yield :header %>
+			</div>
+		</div> <!-- / .page-header -->
+
+		<div class="row">
+			<div class="col-sm-12">
+				<%= yield %>
+			</div>
+		</div>
+		<div id="main-menu-bg"></div>
+	</div> <!-- / #main-wrapper -->
+</div>
+<div id="page-alerts-demo" style="display:none;">
+  	<button id="js_success" data-type="success" data-text="<strong>Warning!</strong> Best check yo self, you're not looking too good." class="btn btn-small btn-primary auto-close-alert">Auto closing alert</button>
+  	<button id="js_warning" data-type="warning" data-text="<strong>Warning!</strong> Best check yo self, you're not looking too good." class="btn btn-small btn-primary auto-close-alert">Auto closing alert</button>
+  	<button id="js_error" data-type="error" data-text="<strong>Warning!</strong> Best check yo self, you're not looking too good." class="btn btn-small btn-primary auto-close-alert">Auto closing alert</button>
+</div>
+<!-- Pixel Admin's javascripts -->
+<!--
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/pixel-admin.min.js"></script>
+ -->
+<script type="text/javascript">
+	init.push(function () {
+		// Javascript code here
+	})
+	window.PixelAdmin.start(init);
+</script>
+</body>
+</html>

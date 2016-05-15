@@ -1,0 +1,171 @@
+<%= stylesheet_link_tag  'jquery.fileupload-noscript','jquery.fileupload-ui-noscript','manager_css/multiple-select', media: 'all' %>
+<%= javascript_include_tag 'jquery-fileupload/basic','manager_js/multiple-select' %>
+<% content_for :header do %>
+	<h1 class="col-xs-12 col-sm-4 text-center text-left-sm"><i class="fa fa-file-o page-header-icon"></i>&nbsp;&nbsp;Edit Document</h1>
+  <%= link_to "GO BACK", manager_documents_path, :class => 'add-new_btn btn btn-page-back col-sm-1' %>
+<% end %>
+
+<%= form_for(@document, url: manager_document_path, remote: true,  method: :patch, html: {id: 'edit_form', class: 'create_record_form',:multipart => true})  do |f| %>
+  <div class="box">
+    <div class="box-body bg-white-15">
+      <div class="row">
+        <label class="col-sm-2">Title</label>
+        <div class="col-sm-6">
+          <%= f.text_field :title, :class => 'form-control page-addform_feild', :placeholder => 'Enter Title' %>
+        </div>
+        <div class="col-sm-4 js_error_container">
+        </div>
+      </div>
+      <div class="row">
+        <label class="col-sm-2">File</label>
+        <div class="col-sm-6">
+        <%= f.file_field :attachment, :class => 'page-addform_feild col-sm-6', :placeholder => 'Upload File' %>
+        </div>
+        <div class="col-sm-4 js_error_container">
+        </div>
+      </div>
+      <div class="row mar-bottom-15">
+        <label class="padding-left_12 col-sm-2">Mandatory</label>
+        <%= f.check_box :mandatory, {:class => 'outline-switcher', "data-class" => "switcher-sm"}, 1, 0 %>
+      </div>
+      <div class="row">
+        <label class="padding-left_12 col-sm-2 mar-bottom-15">For Sample</label>
+        <label class="col-sm-1 pad-left-0">
+          <%= f.check_box :is_sample, {:class => 'outline-switcher', "data-class" => "pull-left switcher-sm"}, 1, 0 %>
+        </label>
+         <div class="col-sm-5">
+        <%= f.text_field :sample_text, :class => 'form-control page-addform_feild', :placeholder => 'Enter Sample Consignment Text', :disabled => true %>
+        </div>
+        <div class="col-sm-4 js_error_container">
+        </div>
+      </div>
+      <div class="row">
+        <label class="padding-left_12 col-sm-2 mar-bottom-15">For Commercial</label>
+        <label class="col-sm-1 pad-left-0">
+          <%= f.check_box :is_commercial, {:class => 'outline-switcher', "data-class" => "pull-left switcher-sm"}, 1, 0 %>
+        </label>
+        <div class="col-sm-5">
+        <%= f.text_field :commercial_text, :class => 'form-control page-addform_feild col-sm-5', :placeholder => 'Enter Commercial Consignment Text', :disabled => true %>
+        </div>
+        <div class="col-sm-4 js_error_container">
+        </div>
+      </div>
+
+      <div class="row form-inline mar-bottom-15">
+        <label class="col-sm-2" id="document_available_to">Applicable for</label>
+        <div class="col-sm-7 radio">
+          <label class="form-group"> 
+              <%= f.radio_button :available_to, 1, {:class => 'px'} %> <span class="lbl"><%= APP_CONFIG['document_available_to_id'][1] %></span>
+          </label>
+          <label class="form-group"> 
+              <%= f.radio_button :available_to, 2, {:class => 'px'} %> <span class="lbl"><%= APP_CONFIG['document_available_to_id'][2] %></span>
+          </label>
+          <label class="form-group"> 
+              <%= f.radio_button :available_to, 3, {:class => 'px'} %> <span class="lbl"><%= APP_CONFIG['document_available_to_id'][3] %></span>
+          </label>
+          <label> 
+              <%= f.radio_button :available_to, 4, {:class => 'px'} %> <span class="lbl"><%= APP_CONFIG['document_available_to_id'][4] %></span>
+          </label>
+        </div>
+        <div class="col-sm-3 js_error_container">
+        </div>
+      </div>
+      
+      <div class="row mar-bottom-15" style="display:none;" id="dest_assoc_container">
+        <label class="padding-left_12 col-sm-2"></label>
+        <div class="col-sm-10 multiple-select-container">
+        <%= select_tag "association[destination_id][]", grouped_options_for_select(@destination_list, @dest_associations), :id => 'assoiation_destination_id', :include_blank => false, :multiple => 'multiple' %>
+        </div>
+      </div>
+      
+      <div class="row">
+        <label class="padding-left_12 col-sm-2 mar-bottom-15">Status</label>
+        <%= f.check_box :status, {:class => 'outline-switcher', "data-class" => "switcher-sm"}, "1", "2" %>
+      </div>
+      <div class="row">
+        <label class="padding-left_12 col-sm-2"></label>
+        <div class="col-sm-10">
+          <button class="btn btn-primary" type="submit" id="save_form_btn">Save</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <%= link_to "Close", manager_documents_path, :class => 'btn btn-default' %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<script type="text/javascript">
+$(function () {
+  var form_url = $("#create_form").attr("action");
+  $('#document_attachment').fileupload({
+      dataType: 'json',
+      url: form_url,
+      autoUpload: false,
+      add : function(e,data){
+        $("#save_form_btn").unbind("click");
+        $("#save_form_btn").attr("type","button");
+        //$("form[data-remote]").off('submit');
+        $("form#edit_form").removeAttr('data-remote')
+        $("#save_form_btn").click(function(){
+          data.submit();
+        });
+      },
+      done: function (e, response) {
+        var data = response.result;
+        if(data.status){
+          if(data.reload == undefined){
+            $('#createModal').modal('hide');
+            $("#js_success").attr("data-text",data.success_message)
+            $("#js_success").trigger("click");
+            get_list();
+          }else{
+            window.location.href = data.reload;
+            return;
+          }
+        }else{
+          $.each(data.error_messages, function( key, value ) {
+            $("#edit_form").find("#"+key).parents(".row:first").find(".js_error_container").html("<span class='js_error error'>"+value+"</span>");
+          });
+        }
+      },
+      submit: function(e, data) {
+        $(".js_error").remove();
+        data.formData = $("#edit_form").serializeArray();
+      }
+  });
+
+  $("#document_is_sample").change(function(){
+    if($(this).is(":checked")){
+        $("#document_sample_text").removeAttr("disabled");
+    }else{
+        $("#document_sample_text").attr("disabled",true);
+    }
+  });
+
+  $("#document_is_commercial").change(function(){
+    if($(this).is(":checked")){
+        $("#document_commercial_text").removeAttr("disabled");
+    }else{
+        $("#document_commercial_text").attr("disabled",true);
+    }
+  });
+
+  $(".px").change(function(){
+    if($(".px:checked").val() == 4){
+      $("#dest_assoc_container").show();
+    }else{
+      $("#dest_assoc_container").hide();
+    }
+  });
+
+  $('#assoiation_destination_id').multipleSelect({
+    placeholder: "Select Destination",
+    multiple: true,
+    multipleWidth: 175,
+    width: '100%'
+  });
+
+  $(".px").trigger("change");
+  $("#document_is_sample").trigger("change");
+  $("#document_is_commercial").trigger("change");
+});
+</script>

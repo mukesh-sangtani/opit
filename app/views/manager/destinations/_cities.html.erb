@@ -1,0 +1,32 @@
+<table class="table table-hover" id="jq-datatables-example1">
+	<thead>
+		<tr>
+			<th> <%= sortable "destination_name", "City" %> </th>
+			<th> <%= sortable "state" %> </th>
+			<th> Status </th>
+			<th> Action </th>
+		</tr>
+	</thead>
+	<tbody>
+	<% if @cities.total_count > 0
+		for city in @cities %>
+		<tr>
+			<td><%= city.destination_name %></td>
+			<td><%= city.state %></td>
+			<td><%= APP_CONFIG['status_id'][city.status] %></td>
+			<td> 
+				<%= link_to content_tag(:i ,"",:class => "fa fa-pencil"), url_for(controller: "manager/destinations", action: "edit_city", id: city.id), {"title" => 'Edit', "data-toggle" => "modal", "data-target" => "#editModal"} %> &nbsp;&nbsp;
+				<%= (city.status == APP_CONFIG['status']['Active']) ? link_to(content_tag(:i ,"",:class => "fa fa-eye"),url_for(controller: "manager/destinations", action: "change_status", id: city.id), :class => 'js_change_status', :remote => true,:title => 'Active; Mark as inactive') : link_to(content_tag(:i ,"",:class => "fa fa-eye-slash grey"),url_for(controller: "manager/destinations", action: "change_status", id: city.id),:class => 'js_change_status', :remote => true,:title => 'Inactive; Mark as active') %> &nbsp;&nbsp;
+				<% # link_to content_tag(:i ,"",:class => "fa fa-trash-o"), url_for(controller: "manager/destinations", action: "destroy", id: city.id), :title => 'Delete', :class => 'js_delete_item', :remote => true,:method => :delete, :data => {:confirm => "Are you sure, you want to delete this city record?"} %>
+			</td>
+		</tr>
+	<% end
+	else %>
+		<tr>
+			<td colspan="3" align="center">No records found.</td>
+		</tr>
+	<% end %>
+	</tbody>
+</table>
+
+	<%= render 'manager/shared/manager_pagination', :records => @cities %>

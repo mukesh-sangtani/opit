@@ -1,0 +1,7 @@
+var feed_for = "<%= escape_javascript(feed_for) %>";
+var escaped_data = "<%= escape_javascript(render(:partial => "master_list", :locals => {:type => @type})) %>";
+if(parseInt(feed_for) == 1){
+	$("#feed_zone").html(escaped_data);
+}else{
+	$("#feed_country").html(escaped_data);
+}

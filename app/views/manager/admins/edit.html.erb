@@ -1,0 +1,42 @@
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	<h4 class="modal-title">Edit Network</h4>
+</div>
+<%= form_for(@network, url: manager_network_path, remote: true, method: :patch, html: {id: 'edit_form', class: 'create_record_form'})  do |f| %>
+	<%= f.hidden_field :id %>
+	<div class="modal-body">
+		<div class="row">
+			<label class="col-sm-2">Network Name</label>
+			<%= f.text_field :network_name, :class => 'form-control page-addform_feild col-sm-6', :placeholder => 'Enter Network Name' %>
+		</div>
+		<div class="row mar-bottom-15">
+			<label class="padding-left_12 col-sm-2">Network Type</label>
+			<div class="col-sm-6 radio">
+			  <label> 
+			      <%= f.radio_button :network_type, 1, {:class => 'px'} %> <span class="lbl">International</span>
+			  </label>
+			  <label> 
+			      <%= f.radio_button :network_type, 2, {:class => 'px'} %> <span class="lbl">Domestic</span>
+			  </label>
+			</div>
+		</div>
+		<div class="row">
+			<label class="col-sm-2">Tracking Link</label>
+			<%= f.text_field :tracking_link, :class => 'form-control page-addform_feild col-sm-6', :placeholder => 'Enter Tracking Link' %>
+		</div>
+		<div class="row">
+			<label class="padding-left_12 col-sm-2">Status</label>
+			<%= f.check_box :status, {:class => 'outline-switcher', "data-class" => "switcher-sm"}, "1", "2" %>
+		</div>
+	</div>
+	<div class="modal-footer">
+	  <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+	  <button class="btn btn-primary" type="submit">Save changes</button>
+	</div>
+<% end %>
+<script type="text/javascript">
+ 	$('.outline-switcher').switcher({
+      on_state_content: '<span class="fa fa-check" style="font-size:11px;"></span>',
+      off_state_content: '<span class="fa fa-times" style="font-size:11px;"></span>'
+    });
+</script>

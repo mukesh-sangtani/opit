@@ -1,0 +1,19 @@
+<% if records.total_count > 0 %>
+    <div class="pagination-per-page text-center">
+        Per page
+        <% APP_CONFIG['manager_pagination_options'].each do |x| %>
+            <% if x == params[:limit].to_i %>
+                <span>  <%= x %> </span>
+            <% else %>
+                <%= link_to x, "javascript:void(0)", {"data-remote" => true, "limit" => x} %>
+            <% end %>
+        <% end %>
+        | Total  
+        <span class="count"> <%= records.total_count %> </span>
+    </div>
+    <div class="page-pagination_inline text-center">
+        <ul class="pagination">
+        	<%= paginate records, :window => 2, :outer_window => 0 %>
+        </ul>
+    </div>
+<% end %>

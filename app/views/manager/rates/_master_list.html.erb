@@ -1,0 +1,57 @@
+<% if type == "Zone" %>
+    <table class="table table-condensed">
+        <tbody>
+            <tr>
+                <th style="width: 10px">#</th>
+                <th>Zone</th>
+                <th style="width: 60px">Action</th>
+            </tr>
+            <% if @feeded_zone_list.length > 0
+                i = 1
+                for rate in @feeded_zone_list %>
+            <tr>
+                <td><%= i %>.</td>
+                <td><%= rate.zone.zone_name %></td>
+                <td>
+                    <%= link_to content_tag(:i ,"",:class => "fa fa-pencil"), "javascript:void(0)", {"title" => 'Edit', "class"=>'js_edit_zone','js_zone_id'=>rate.zone_id} %> &nbsp;&nbsp;
+                    <%= link_to content_tag(:i ,"",:class => "fa fa-trash-o"), "javascript:void(0)", {"title" => 'Edit', "class"=>'js_delete_zone','js_zone_id'=>rate.zone_id} %> 
+                </td>
+            </tr>
+            <%  i = i+1
+                end
+            else %>
+                <tr>
+                    <td colspan="3" align="center">No records found.</td>
+                </tr>
+            <% end %>      
+        </tbody>
+    </table>
+<% else %>
+    <table class="table table-condensed">
+        <tbody>
+            <tr>
+                <th style="width: 10px">#</th>
+                <th>Destination</th>
+                <th style="width:60px">Action</th>
+            </tr>
+            <% if @feeded_dest_list.length > 0
+                i = 1
+                for rate in @feeded_dest_list %>
+            <tr>
+                <td><%= i %>.</td>
+                <td><%= rate.destination.destination_name %></td>
+                <td>
+                    <%= link_to content_tag(:i ,"",:class => "fa fa-pencil"), "javascript:void(0)", {"title" => 'Edit', "class"=>'js_edit_destination','js_dest_id'=>rate.destination_id} %> &nbsp;&nbsp;
+                    <%= link_to content_tag(:i ,"",:class => "fa fa-trash-o"), "javascript:void(0)", {"title" => 'Edit', "class"=>'js_delete_destination','js_dest_id'=>rate.destination_id} %>
+                </td>
+            </tr>
+            <%  i = i+1
+                end
+            else %>
+                <tr>
+                    <td colspan="3" align="center">No records found.</td>
+                </tr>
+            <% end %>      
+        </tbody>
+    </table>
+<% end %>

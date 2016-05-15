@@ -1,0 +1,80 @@
+<% content_for :header do %>
+	<h1 class="col-xs-12 col-sm-4 text-center text-left-sm"><i class="fa fa-tasks page-header-icon"></i>&nbsp;&nbsp;Rate Quote Options</h1>
+		<button class="add-new_btn btn btn-primary col-sm-1" data-toggle="modal" type="button" data-target="#createModal">Add New +</button>
+	    <a class="add-new_btn btn btn-page-back col-sm-1">
+	      <i class="fa fa-angle-left"></i> GO BACK
+	    </a>
+<% end %>
+
+<%= form_tag manager_rate_quote_options_path, :method => 'get', :id => "search_form" do %>
+  	<%= hidden_field_tag :direction, params[:direction], :id => "js_direction" %>
+  	<%= hidden_field_tag :sort, params[:sort], :id => "js_sort" %>
+  	<%= hidden_field_tag :limit, params[:limit], :id => "js_limit" %>
+  	<%= hidden_field_tag :page, params[:page], :id => "js_page" %>
+  	<div class="row">
+	    <div class="col-sm-12">
+        <div class="first-col col-sm-3">
+          <%= text_field_tag :search, params[:search], :class => "js_search_field page-search_feild" %>
+        </div>
+		    <div class="first-col col-sm-3">
+		      <%= select_tag :option_type, options_for_select(APP_CONFIG['quote_option_id'].map{|role| [ role[1], role[0] ]}), :class => "page-search_sfeild", :include_blank => "ALL" %>
+		    </div>
+		    <div class="col-sm-3">
+	    		<%= button_tag "Search", :name => nil, :id => "search_form_submit", :class => "btn btn-success page-btn-search", :type => "button" %>
+		    </div>
+	    </div>
+  	</div>
+	<div class="panel search_view_table" id="rate_quote_options">
+		<%= render 'options' %>
+	</div>
+<% end %>
+
+<div id="createModal" class="modal fade" tabindex="-1" role="dialog" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Add New Option</h4>
+      </div>
+      <%= form_for(@rate_quote_option, url: manager_rate_quote_options_path, remote: true, method: :post, html: {id: 'create_form', class: 'create_record_form'})  do |f| %>
+        <div class="modal-body">
+          <div class="row">
+            <label class="col-sm-2">Option Type</label>
+            <%= f.select :option_type, options_for_select(APP_CONFIG['quote_option_id'].map{|role| [ role[1], role[0] ]}),{:include_blank => "Select Type"}, {:class => "form-control page-addform_feild col-sm-6 js_option_type"} %>
+            <% #f.collection_select :state, @state_list, "state", "state", {},:class => 'form-control page-addform_feild col-sm-6' %>
+          </div>
+          <div class="row">
+            <label class="col-sm-2">Title</label>
+            <%= f.text_field :title, :class => 'form-control page-addform_feild col-sm-6', :placeholder => 'Enter Title' %>
+          </div>
+          <div class="row js_option_div" style="display:none;">
+            <label class="col-sm-2" style="display:none1;">Options</label>
+            <%= f.text_area :options, :class => 'form-control page-addform_feild col-sm-6', :placeholder => 'Enter Options' %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+          <button class="btn btn-primary" type="submit">Save changes</button>
+        </div>
+      <% end %>
+    </div> <!-- / .modal-content -->
+  </div> <!-- / .modal-dialog -->
+</div>
+
+<div id="editModal" class="modal fade" tabindex="-1" role="dialog" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      
+    </div> <!-- / .modal-content -->
+  </div> <!-- / .modal-dialog -->
+</div>
+
+<script type="text/javascript">
+  $("body").on("change",".js_option_type", function(e) {
+        if(parseInt($(this).val()) === 5){
+          $(".js_option_div").show()
+        }else{
+          $(".js_option_div").hide()
+        }
+    });
+</script>

@@ -1,0 +1,37 @@
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	<h4 class="modal-title">Edit Zone</h4>
+</div>
+<%= form_for(@zone, url: manager_zone_path, remote: true, method: :patch, html: {id: 'edit_form', class: 'create_record_form'})  do |f| %>
+	<%= f.hidden_field :id %>
+	<div class="modal-body">
+		<div class="row">
+	        <label class="col-sm-2">Zone Name</label>
+	        <div class="col-sm-6">
+              <%= f.text_field :zone_name, :class => 'form-control page-addform_feild', :placeholder => 'Enter Zone Name' %>
+            </div>
+            <div class="col-sm-4 js_error_container">               
+            </div>
+	    </div>
+	    <div class="row">
+	        <label class="col-sm-2">Zone Code</label>
+	        <div class="col-sm-6">
+              <%= f.text_field :zone_code, :class => 'form-control page-addform_feild col-sm-6', :placeholder => 'Enter Zone Code', :maxlength => '5' %>
+            </div>
+            <div class="col-sm-4 js_error_container">               
+            </div>
+	    </div>
+	    <div class="row">
+	        <label class="col-sm-2">Display Order</label>
+	        <div class="col-sm-6">
+              <%= f.text_field :display_order, :class => 'form-control page-addform_feild col-sm-6', :placeholder => 'Enter Display Order', :maxlength => '3' %>
+            </div>
+            <div class="col-sm-4 js_error_container">               
+            </div>
+	    </div>
+	</div>
+	<div class="modal-footer">
+	  <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+	  <button class="btn btn-primary" type="submit">Save changes</button>
+	</div>
+<% end %>

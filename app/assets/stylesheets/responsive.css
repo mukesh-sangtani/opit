@@ -1,0 +1,206 @@
+
+@media only screen and (min-width:768px) and (max-width: 869px){
+	.nav > li > a{
+		padding: 10px 6px;
+	}
+}
+@media all and (max-width: 767px){
+    .top-banner{
+    	padding-bottom: 0px;
+    }
+    .top-banner .banner-content{
+		font-size: 20px;
+		line-height: 24px;
+	}
+    .dis-table .vcenter{
+    	display: block;
+    	margin-bottom: 50px;
+    }
+    .navbar-nav{
+    	margin: 0px;
+    }
+    .menu{
+		position: absolute;
+		right: 20px;
+		top: 90px;
+		background-color: #435562;
+		z-index: 9;
+		width: 280px;
+		padding: 0px;
+		border: none;
+    }
+    .menu.in{
+    	overflow: inherit;
+    }
+    .menu .nav>li>a{
+    	border-bottom: solid 1px #677E8E;
+    	color: #fff;
+    	border-top: none;
+    }
+    .menu .nav>li.active>a{
+    	border-bottom: solid 1px #677E8E;
+    	border-top: none;
+    }
+    .menu .nav>li>a:focus{
+    	border-bottom: solid 1px #677E8E;
+    	border-top: none;
+    }
+    .menu .nav>li>a.make-app{
+    	border-bottom-color: #677E8E;
+    	border-top: none;
+    }
+    .menu .nav>li>a.make-app:hover{
+    	color: #3397e1;
+    	background-color: #435562;
+    	border-bottom-color:#677E8E;
+    	border-top: none;
+    }
+    .partner-strip .partner-category-head{
+    	float: none;
+    }
+    .carrer-form-strip .career-desc-field{
+    	margin-top: 5px;
+    }
+    .carrer-form-strip label{
+    	margin-top: 10px;
+    }
+    .carrer-form-strip .upload-btn{
+    	height: 41px;
+		line-height: 41px;
+		top: 6px;
+		right: 0;
+    }
+    
+    .Appointment-form-strip label{
+    	margin-top: 15px;
+    }
+    .saks-strip .twitter-feeds, .saks-strip .gplus-feeds{
+    	margin-top: 15px;
+    }
+    
+}
+@media all and (max-width: 992px){
+	.container{
+        width: 100%;
+    }
+}
+@media all and (max-width: 1089px){
+  	.contact-strip .content-sec .col-sm-3:first-child{
+  		width: 100%;
+  	}
+  	.contact-strip .content-sec .col-sm-3{
+  		width: 33.33%;
+  	}
+
+}
+@media all and (max-width: 848px){
+	.contact-strip .container{
+		padding-top: 30px;
+	}
+	.contact-strip .map{
+		position: relative;
+		width: 100%;
+		height: 300px;
+	}
+	.contact-strip .col-sm-offset-6{
+		margin-left: 0;
+	}
+	.contact-strip .col-sm-6{
+		width: 100%;
+	}
+  	.contact-strip .content-sec .col-sm-3{
+  		width: 25%;
+  	}
+  	.contact-strip{
+  		padding-top: 0;
+  	}
+  	
+}
+@media all and (max-width: 938px){
+	.appoint_strip .button{
+		margin-top: 20px;
+	}
+}
+@media all and (max-width: 640px){
+	.testi-strip .comment-sec{
+		padding: 40px 40px;
+	}
+}
+@media all and (max-width: 480px){
+	.logo img{
+		width: 80px;
+	}
+	.logo{
+		background: none;
+		box-shadow: none;
+		margin-top: 0;
+	}
+	.nav-tab-center.nav-tabs>li{
+		float: left;
+	}
+	.top-strip .ph-no{
+		margin-left: 0;
+	}
+	.top-banner{
+		margin-top: 0;
+		padding-top: 20px;
+	}
+	.top-banner .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9{
+		padding-right: 0;
+		padding-left: 0;
+	}
+	.top-banner .banner-content{
+		font-size: 16px;
+		margin-top: 10px;
+	}
+	.main-header-page{
+		margin-top: 0;
+		padding: 10px 0;
+	}
+	.nav-tab-center.nav-tabs > li{
+		width: 50%;
+	}
+	.nav-tab-center.nav-tabs > li a{
+		width: 100%;
+	}
+	.main-cont-strip .container{
+		padding: 0px;
+	}
+	.main-cont-strip{
+		padding: 30px 0;
+	}
+	.dis-table img{
+		max-width: 50%;
+	}
+	.dis-table .vcenter{
+		margin-bottom: 20px;
+	}
+	.appoint_strip .text-sec{
+		font-size: 16px;
+	}
+	.appoint_strip .button{
+		font-size: 14px;
+		padding: 15px 20px;
+	}
+	.contact-strip .content-sec{
+		padding: 0 20px;
+	}
+	.contact-strip .main-heading{
+		text-align: center;
+	}
+	.footer-strip .input-group-addon{
+		padding: 0 5px;
+	}
+	.footer-strip input{
+		padding-left: 5px;
+	}
+	.footer-strip .Social-icons li{
+		padding: 8px;
+	}
+	.partner-strip .col-md-3{
+		margin-bottom: 0px;
+	}
+	.contact-form-strip .row{
+		margin:0px; 
+	}
+}

@@ -1,0 +1,161 @@
+<%= stylesheet_link_tag  'select2.min' %>
+<%= javascript_include_tag 'select2.min','manager_js/jquery-dateFormat.min' %>
+<div class="container">
+  <div class="search-select_wrapper">
+    <%= form_tag url_for(controller: "search", action: "search_rate"), :method => 'post', :id => "client_rate_search_form" do %>
+    <%= hidden_field_tag 'group_id', '' %>
+    <div class="search_wrapper">
+      <div class="col-sm-12 text-center box-head-search">
+        <div class="search-head">
+          Search
+        </div>
+      </div>
+      <div class="col-sm-3 text-center">
+        <div class="step-head">
+          <span class="badge badge-primary">1</span> <label class="control-label">Packet Type</label>
+        </div>
+        <div class="col-sm-12 text-center">
+          <%= hidden_field_tag 'destination_type', '1', 'id' => 'destination_type' %>
+          <a href="javascript:void(0)" class="btn btn-primary m-r-5 js_destination_type" type="1">International<i class="fa fa-check"></i></a>
+          <a href="javascript:void(0)" class="btn btn-default m-l-5 js_destination_type" type="2">Domestic</a>
+        </div>
+      </div>
+      <div class="col-sm-3 text-center">
+        <div class="step-head">
+          <span class="badge badge-primary">2</span>
+          <label class="control-label">Select Country</label>
+        </div>
+        <div class="col-sm-12" id="dest_container">
+          <%= select_tag "country", options_for_select(@countries), :class => "form-control js_select2", :include_blank => "Select Country" %>
+        </div>
+      </div>
+      <div class="col-sm-3 text-center">
+        <%= hidden_field_tag 'packet_type', '1', 'id' => 'packet_type' %>
+        <div class="step-head">
+          <span class="badge badge-primary">3</span> <label class="control-label">Packet Type</label>
+        </div>
+        <div class="col-sm-12 text-center">
+          <a href="javascript:void(0)" class="btn btn-primary m-r-5 js_packet_type" type="1">Sample <i class="fa fa-check"></i></a>
+          <a href="javascript:void(0)" class="btn btn-default m-l-5 js_packet_type" type="2">Commercial</a>
+        </div>
+      </div>
+      <div class="col-sm-3 text-center">
+        <div class="step-head">
+          <span class="badge badge-primary">4</span> <label class="control-label">Select Weight</label>
+        </div>
+        <div class="col-sm-12">
+          <%= select_tag "weight", options_for_select(@weight), :class => "form-control", :include_blank => "Select Weight" %>
+        </div>
+      </div>
+      <span class="overlay">
+        <a href="javascript:void(0)" id="js_edit_selection">
+          <p><i class="fa fa-pencil"></i> Edit</p>
+        </a>
+      </span>
+      <div class="col-sm-12 text-center submit_wrapper">
+        <button class="btn btn-success" type="submit" id="rate_search_form_submit">SUBMIT</button>
+      </div>
+    </div>
+    <% end %>
+  </div>
+  <div class="after-search-down-cont" id="js_search_results"></div>
+</div>
+<script type="text/javascript">
+  $(".js_select2").select2();
+  $(".js_packet_type").click(function(){
+    if(!$(this).hasClass("btn-primary")){
+      $(".js_packet_type").addClass("btn-default").removeClass("btn-primary").find(".fa-check").remove();
+      $(this).addClass("btn-primary").removeClass("btn-default");
+      $(this).append(' <i class="fa fa-check"></i>');
+      $("#packet_type").val($(this).attr("type"));
+    }
+  });
+
+  function get_search_results(){
+    form_submit = true;
+    if($("#destination_type").val() == 1){
+      var dest_id = $.trim($("#country").val());
+    }else{
+      var dest_id = $.trim($("#city").val());
+    }
+    if(dest_id == ""){
+      $("#dest_container").addClass("has-error");
+      form_submit = false;
+    }else{
+      $("#dest_container").removeClass("has-error");
+    }
+    if($("#weight").val() == ""){
+      $("#weight").parents("div:first").addClass("has-error");
+      form_submit = false;
+    }else{
+      $("#weight").parents("div:first").removeClass("has-error");
+    }
+
+    if(form_submit){
+      var jqxhr = $.get($("#client_rate_search_form").attr("action"), $("#client_rate_search_form").serialize(), null, "html");
+      jqxhr.done(function(data,status,xhr){
+        $(".search-select_wrapper").addClass("after-search");
+        $("#js_search_results").html(data);
+        // $(".search-select_wrapper").addClass("after-search");
+      });
+    }
+      return false;
+  }
+
+  $("#rate_search_form_submit").click(function() {
+    var group_id = randString(8)+ (new Date).getTime();
+    $("#group_id").val(group_id);
+    get_search_results();
+    return false;
+  });
+
+  $("#js_search_results").on("click",".js_move_weight",function(){
+    var current_index = $("#weight").prop('selectedIndex');
+    if($(this).hasClass("left")){
+      $("#weight").prop('selectedIndex',current_index-1);
+    }else{
+      $("#weight").prop('selectedIndex',current_index+1);
+    }
+    get_search_results();
+  });
+
+  $("#js_search_results").on('click', '.js_last_10_trans', function() {
+      group_type = $(this).attr("type");
+      if($("#js_"+group_type+"_records").is(":visible")){
+        return false;
+      }
+      rate_master_id = $(this).attr("rate_master_id");
+      $(this).parents(".end-sec-box:first").addClass("last-10-trans");
+      $("#js_"+group_type+"_records").find("table > tbody > tr").hide();
+      len = $("#js_"+group_type+"_records").find("table > tbody > tr[rate_master_id='"+rate_master_id+"']").length; 
+      if(len > 0){
+        $("#js_"+group_type+"_records").find("table > tbody > tr[rate_master_id='"+rate_master_id+"']").show(); 
+      }else{
+        $("#js_"+group_type+"_records").find('table > tbody > tr[rate_master_id="-1"]').show();
+      }
+      $("#js_"+group_type+"_records").addClass("js_awb_records_visible");
+      $("#js_"+group_type+"_records").slideDown(100);
+  });
+
+  $("#js_search_results").on('mouseleave', '.js_last_10_trans', function() {
+      var group_type = $(this).attr("type");
+      setTimeout(function(){ 
+        if(!$(".js_awb_records_visible:hover").length){
+          $(".end-sec-box").removeClass("last-10-trans");
+          $(".js_awb_records_visible").slideUp(500);
+          $(".js_awb_records_visible").removeClass("js_awb_records_visible");
+        }
+      }, 700);
+  });
+
+  $("#js_search_results").on('mouseleave', '.js_awb_records_visible', function() {
+    $(this).slideUp(500);
+    $(".end-sec-box").removeClass("last-10-trans");
+    $(this).removeClass("js_awb_records_visible");
+  });
+
+  $("#js_edit_selection").click(function(){
+    $(".search-select_wrapper").removeClass("after-search");
+    $("#js_search_results").html("");
+  });
+</script>

@@ -1,0 +1,70 @@
+<% content_for :header do %>
+	<h1 class="col-xs-12 col-sm-4 text-center text-left-sm"><i class="fa fa-tag page-header-icon"></i>&nbsp;&nbsp;Zone List</h1>
+    <button class="add-new_btn btn btn-primary col-sm-1" data-toggle="modal" type="button" data-target="#createModal">Add New +</button>
+    <button class="add-new_btn btn btn-page-back col-sm-1" type="button">
+      GO BACK
+    </button>
+<% end %>
+
+<%= form_tag manager_zones_path, :method => 'get', :id => "search_form" do %>
+	<%= hidden_field_tag :direction, params[:direction], :id => "js_direction" %>
+	<%= hidden_field_tag :sort, params[:sort], :id => "js_sort" %>
+	<%= hidden_field_tag :limit, params[:limit], :id => "js_limit" %>
+	<%= hidden_field_tag :page, params[:page], :id => "js_page" %>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="first-col col-sm-3">
+        <%= text_field_tag :search, params[:search], :class => "js_search_field page-search_feild" %>
+      </div>
+      <div class="col-sm-3">
+        <%= button_tag "Search", :name => nil, :id => "search_form_submit", :class => "btn btn-success page-btn-search", :type => "button" %>
+      </div>
+    </div>
+  </div>
+  <div class="panel search_view_table" id="zones">
+  	<%= render 'zones' %>
+  </div>
+<% end %>
+
+<div id="createModal" class="modal fade" tabindex="-1" role="dialog" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Add New Zone</h4>
+      </div>
+      <%= form_for(@zone, url: manager_zones_path, remote: true, method: :post, html: {id: 'create_form', class: 'create_record_form'})  do |f| %>
+        <div class="modal-body">
+          <div class="row">
+            <label class="col-sm-2">Zone Name</label>
+            <div class="col-sm-6">
+              <%= f.text_field :zone_name, :class => 'form-control page-addform_feild', :placeholder => 'Enter Zone Name' %>
+            </div>
+            <div class="col-sm-4 js_error_container">               
+            </div>
+          </div>
+          <div class="row">
+            <label class="col-sm-2">Zone Code</label>
+            <div class="col-sm-6">
+              <%= f.text_field :zone_code, :class => 'form-control page-addform_feild col-sm-6', :placeholder => 'Enter Zone Code', :maxlength => '5' %>
+            </div>
+            <div class="col-sm-4 js_error_container">               
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+          <button class="btn btn-primary" type="submit">Save changes</button>
+        </div>
+      <% end %>
+    </div> <!-- / .modal-content -->
+  </div> <!-- / .modal-dialog -->
+</div>
+
+<div id="editModal" class="modal fade" tabindex="-1" role="dialog" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">      
+    </div> <!-- / .modal-content -->
+  </div> <!-- / .modal-dialog -->
+</div>

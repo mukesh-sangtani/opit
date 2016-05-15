@@ -1,0 +1,38 @@
+<table class="table table-hover" id="jq-datatables-example1">
+	<thead>
+		<tr>
+			<th> <%= sortable "name" %> </th>
+			<th> <%= sortable "email" %> </th>
+			<th> <%= sortable "mobile" %> </th>
+			<th> <%= sortable "admin_type","Type" %> </th>
+			<th> <%= sortable "last_sign_in_at","Last Login" %> </th>
+			<th> Action </th>
+		</tr>
+	</thead>
+	<tbody>
+	<% if @admins.total_count > 0 
+		for admin in @admins %>
+			<tr>
+				<td><%= admin.name %></td>
+				<td><%= admin.email %></td>
+				<td><%= admin.mobile %></td>
+				<td><%= APP_CONFIG['admin_type_id'][admin.admin_type] %></td>
+				<td><%= admin.last_sign_in_at.nil? ? "-" : admin.last_sign_in_at.strftime("%d %b(%a), %l:%M %p") %></td>
+				<td>
+					<%= link_to content_tag(:i ,"",:class => "fa fa-pencil"), edit_admin_registration_path(admin), {"title" => 'Edit'} %> &nbsp;&nbsp;
+					<%= (admin.status == APP_CONFIG['status']['Active']) ? link_to(content_tag(:i ,"",:class => "fa fa-eye"),url_for(controller: "manager/admins", action: "change_status", id: admin.id), :class => 'js_change_status', :remote => true,:title => 'Active; Mark as inactive') : link_to(content_tag(:i ,"",:class => "fa fa-eye-slash grey"),url_for(controller: "manager/admins", action: "change_status", id: admin.id),:class => 'js_change_status', :remote => true,:title => 'Inactive; Mark as active') %> &nbsp;&nbsp;
+					<%= link_to content_tag(:i ,"",:class => "fa fa-unlock"), url_for(controller: "manager/admins", action: "edit_password", id: admin.id), :title => 'Change Password' %>&nbsp;&nbsp;
+					<%= link_to content_tag(:i ,"",:class => "fa fa-trash-o"), manager_admins_path(admin.id), :title => 'Delete', :class => 'js_delete_item', :remote => true,:method => :delete, :data => {:confirm => "Are you sure, yuo want to delete this user?"} %>&nbsp;&nbsp;
+					<%= link_to content_tag(:i ,"",:class => "fa fa-gears"),url_for(:controller => 'manager/admins', :action => 'manage_permissions', :id => admin.id),:title => 'Manage Permission' %>
+				</td>
+			</tr>
+	<% end
+	else %>
+		<tr>
+			<td colspan="4" align="center">No records found.</td>
+		</tr>
+	<% end %>
+	</tbody>
+</table>
+
+<%= render 'manager/shared/manager_pagination', :records => @admins %>

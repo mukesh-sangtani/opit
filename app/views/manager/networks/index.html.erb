@@ -1,0 +1,142 @@
+<%= stylesheet_link_tag  'jquery.fileupload-noscript','jquery.fileupload-ui-noscript', media: 'all' %>
+<%= javascript_include_tag 'jquery-fileupload/basic' %>
+<% content_for :header do %>
+	<h1 class="col-xs-12 col-sm-4 text-center text-left-sm"><i class="fa fa-globe page-header-icon"></i>&nbsp;&nbsp;Network List</h1>
+    <button class="add-new_btn btn btn-primary col-sm-1" data-toggle="modal" type="button" data-target="#createModal">Add New +</button>
+    <button class="add-new_btn btn btn-page-back col-sm-1" type="button">
+      GO BACK
+    </button>
+<% end %>
+
+<%= form_tag manager_networks_path, :method => 'get', :id => "search_form" do %>
+	<%= hidden_field_tag :direction, params[:direction], :id => "js_direction" %>
+	<%= hidden_field_tag :sort, params[:sort], :id => "js_sort" %>
+	<%= hidden_field_tag :limit, params[:limit], :id => "js_limit" %>
+	<%= hidden_field_tag :page, params[:page], :id => "js_page" %>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="first-col col-sm-3">
+        <%= text_field_tag :search, params[:search], :class => "js_search_field page-search_feild" %>
+      </div>
+      <div class="col-sm-3">
+        <%= button_tag "Search", :name => nil, :id => "search_form_submit", :class => "btn btn-success page-btn-search", :type => "button" %>
+      </div>
+    </div>
+  </div>
+  <div class="panel search_view_table" id="networks">
+  	<%= render 'networks' %>
+  </div>
+<% end %>
+
+<div id="createModal" class="modal fade" tabindex="-1" role="dialog" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Add New Network</h4>
+      </div>
+      <%= form_for(@network, url: manager_networks_path, remote: true, method: :post, html: {id: 'create_form', class: 'create_record_form',:multipart => true})  do |f| %>
+        <div class="modal-body">
+          <div class="row">
+            <label class="col-sm-2">Network Name</label>
+            <div class="col-sm-6">
+              <%= f.text_field :network_name, :class => 'form-control page-addform_feild margin_b_0', :placeholder => 'Enter Network Name' %>
+            
+              <p class="help-block margin_b_25">Example block-level help text here.</p>
+             </div>
+             <div class="col-sm-4 js_error_container">               
+             </div>
+          </div>
+          <div class="row mar-bottom-15">
+            <label class="padding-left_12 col-sm-2">Network Type</label>
+            <div class="col-sm-6 radio">
+              <label> 
+                  <%= f.radio_button :network_type, 1, {:class => 'px'} %> <span class="lbl">International</span>
+              </label>
+              <label> 
+                  <%= f.radio_button :network_type, 2, {:class => 'px'} %> <span class="lbl">Domestic</span>
+              </label>
+            </div>
+            <div class="col-sm-4 js_error_container">               
+            </div>
+          </div>
+          <div class="row">
+            <label class="col-sm-2">Tracking Link</label>
+            <div class="col-sm-6">
+              <%= f.text_field :tracking_link, :class => 'form-control page-addform_feild', :placeholder => 'Enter Tracking Link' %>
+            </div>
+          </div>
+          <div class="row">
+            <label class="col-sm-2">Network Image</label>
+            <div class="col-sm-6">
+              <%= f.file_field :image, :class => 'form-control page-addform_feild', :placeholder => 'Upload Image' %>
+            </div>
+            <div class="col-sm-4 js_error_container">               
+            </div>
+          </div>
+          <div class="row">
+            <label class="padding-left_12 col-sm-2">Status</label>
+            <div class="col-sm-6">
+                <%= f.check_box :status, {:class => 'outline-switcher', "data-class" => "switcher-sm checked"}, "1", "2" %>
+            </div>
+          </div>
+          <!-- <input type="checkbox" data-class="switcher-sm checked" class="outline-switcher"> -->
+        </div>
+        <div class="modal-footer">
+          <button data-dismiss="modal" class="btn btn-default" type="button">Close</button>
+          <button class="btn btn-primary" type="submit" id="save_form_btn" >Save changes</button>
+        </div>
+      <% end %>
+    </div> <!-- / .modal-content -->
+  </div> <!-- / .modal-dialog -->
+</div>
+
+<div id="editModal" class="modal fade" tabindex="-1" role="dialog" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">      
+    </div> <!-- / .modal-content -->
+  </div> <!-- / .modal-dialog -->
+</div>
+
+<script type="text/javascript">
+$(function () {
+  var form_url = $("#create_form").attr("action");
+  $('#network_image').fileupload({
+      dataType: 'json',
+      url: form_url,
+      autoUpload: false,
+      add : function(e,data){
+        $("#save_form_btn").unbind("click");
+        $("#save_form_btn").attr("type","button");
+        //$("form[data-remote]").off('submit');
+        $("form#create_form").removeAttr('data-remote')
+        $("#save_form_btn").click(function(){
+          data.submit();
+        });
+      },
+      done: function (e, response) {
+        var data = response.result;
+        if(data.status){
+          if(data.reload == undefined){
+            $('#createModal').modal('hide');
+            $("#js_success").attr("data-text",data.success_message)
+            $("#js_success").trigger("click");
+            get_list();
+          }else{
+            window.location.href = data.reload;
+            return;
+          }
+        }else{
+          $.each(data.error_messages, function( key, value ) {
+            $("#create_form").find("#"+key).parents(".row:first").find(".js_error_container").html("<span class='js_error error'>"+value+"</span>");
+          });
+        }
+      },
+      submit: function(e, data) {
+        $(".js_error").remove();
+        data.formData = $("#create_form").serializeArray();
+      }
+  });
+});
+</script>

@@ -1,0 +1,419 @@
+<% if @express_rates.count > 0 ||  @standard_rates.count > 0 ||  @economic_rates.count > 0 %>
+
+
+<div class="panel heading-next-prev">
+  <div class="panel-body">
+    <a href="javascript:void(0)" class="btn btn-primary left js_move_weight disabled pull-left">
+      <i class="fa fa-chevron-left"></i>
+    </a>
+    <a href="javascript:void(0)" class="btn btn-primary right js_move_weight pull-right">
+      <i class="fa fa-chevron-right"></i>
+    </a>
+    <div class="h4 text-center">Results for ALBANIA Sample shipment weight 1.50 Kg</div>
+    
+  </div>
+</div>
+
+<div class="btn_wrapper" id="doc_title">
+<h4 class="text-center margin_t_15 text-primary"> Paper Work / Documents  </h4>
+<p class="text-center text-danger">(Documents marked as Red are mandatory)</p>
+  <a class="btn btn-flat btn-labeled btn-default" data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a>
+  <a class="btn btn-flat btn-labeled btn-danger"  data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a>
+  <a class="btn btn-flat btn-labeled btn-default"  data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a>
+  <a class="btn btn-flat btn-labeled btn-danger"  data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a>
+  <a class="btn btn-flat btn-labeled btn-default"  data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a>
+  <a class="btn btn-flat btn-labeled btn-danger"  data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a>
+  <a class="btn btn-flat btn-labeled btn-default"  data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a>
+  <a class="btn btn-flat btn-labeled btn-danger"  data-toggle="tooltip" data-placement="bottom" title="lorem ipsum Dummy Text "><span class="btn-label icon fa fa-file-o"></span>Default</a>
+</div>
+
+<% if @express_rates.count > 0 %>
+  <div class="col-sm-12 sec-head">
+    <%= APP_CONFIG["rate_master_category_id"][6] %>
+  </div>
+      
+  <div class="search-result-sec">
+    <div class="row">
+      <% for rate_record in @express_rates %>
+        <div class="col-sm-4">
+          <div class="box">
+            <div class="logo-bar">
+              <div class="col-sm-6">
+                <div class="box-logo">
+                  <%= image_tag "/"+rate_record.rate_master.network.image.url(:thumb) %>
+                  <div class="network">
+                    <%= rate_record.rate_master.network.network_name %>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 text-right">
+                <i class="fa fa-clock-o"></i> Estimated Delivery<br>
+                <p class="est-del-tym">
+                  <%= APP_CONFIG['delivery_days'][rate_record.dely_1.to_s+"-"+rate_record.dely_2.to_s] %>
+                </p>
+              </div>
+            </div>
+              
+            <div class="middle-sec-box">
+              <div class="col-sm-4 text-center" id="myTooltips">
+                <a href="#" data-toggle="tooltip" data-placement="bottom" title=" lorem ipsum <br>dummy ">
+                  <i class="fa fa-list-alt primary_blue"></i>
+                  <br>
+                  Paper Work
+                </a>
+              </div>
+              <div class="col-sm-4 text-center" id="myTooltips">
+                <a href="#" data-toggle="tooltip" data-placement="bottom" title=" ">
+                  <i class="fa fa-usd blue"></i>
+                  <br>
+                  Invoice Value
+                </a>
+              </div>
+              <div class="col-sm-4 text-center" id="myTooltips">
+                <a href="#" data-toggle="tooltip" data-placement="bottom" title=" ">
+                  <i class="fa fa-briefcase danger"></i>
+                  <br>
+                  Duty & Taxes
+                </a>
+              </div>
+            </div>
+
+            <div class="col-sm-12 price text-center">
+              <i class="fa fa-inr"></i> <%= rate_record.cln_total %>
+            </div>
+
+            <div class="end-sec-box">
+              <a href="javascript:void(0)" class="js_last_10_trans" type="express" rate_master_id="<%= rate_record.rate_master_id %>">
+                  Last 10  <i class="fa fa-sort-numeric-asc"></i>
+                  <br> <span class="trans">Transactions</span>
+              </a>
+            </div>
+
+            <a class="group4" href="img/dhl.png" id="oval">Book Now
+            </a>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="row m-t js_awb_records" style="display:none;" id="js_express_records">
+      <div class="col-sm-12">
+        <div class="box-white">
+          <div class="col-sm-12">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>AWB</th>
+                  <th>Booking Date</th>
+                  <th>Weight</th>
+                  <th>PCS</th>
+                  <th>Delviry Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr rate_master_id="-1">
+                  <td colspan="5" align="center">No latest records found.</td>
+                </tr>
+                <% for rate_record in @express_rates %>
+                  <% for awb_record in rate_record.last_10_records %>
+                  <tr rate_master_id="<%= rate_record.rate_master_id %>">
+                    <td> <a href="<%= rate_record.rate_master.network.tracking_link.sub("[AWB_NO]",awb_record.net_no) %>"><%= awb_record.net_no %></a></td>
+                    <td><%= awb_record.booking_date.strftime("%d %b, %Y (%A)") %></td>
+                    <td><%= awb_record.actual_wt %> Kg</td>
+                    <td><%= awb_record.no_pcs %></td>
+                    <td><%= awb_record.delivery_datetime.strftime("%d %b, %Y (%A)") %></td>
+                  </tr>
+                <%  end 
+                  end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% if @standard_rates.count > 0 %>
+  <div class="col-sm-12 sec-head">
+    <%= APP_CONFIG["rate_master_category_id"][9] %>
+  </div>
+      
+  <div class="search-result-sec">
+    <div class="row">
+      <% for rate_record in @standard_rates %>
+        <div class="col-sm-4">
+          <div class="box">
+            <div class="logo-bar">
+              <div class="col-sm-6">
+                <div class="box-logo">
+                  <%= image_tag "/"+rate_record.rate_master.network.image.url(:thumb) %>
+                  <div class="network">
+                    <%= rate_record.rate_master.network.network_name %>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 text-right">
+                <i class="fa fa-clock-o"></i> Estimated Delivery<br>
+                <p class="est-del-tym">
+                  <%= APP_CONFIG['delivery_days'][rate_record.dely_1.to_s+"-"+rate_record.dely_2.to_s] %>
+                </p>
+              </div>
+            </div>
+              
+            <div class="middle-sec-box">
+              <div class="col-sm-4 text-center" id="myTooltips">
+                <a href="#" data-toggle="tooltip" data-placement="bottom" title=" ">
+                  <i class="fa fa-list-alt primary_blue"></i>
+                  <br>
+                  Paper Work
+                </a>
+              </div>
+              <div class="col-sm-4 text-center" id="myTooltips">
+                <a href="#" data-toggle="tooltip" data-placement="bottom" title=" ">
+                  <i class="fa fa-usd blue"></i>
+                  <br>
+                  Invoice Value
+                </a>
+              </div>
+              <div class="col-sm-4 text-center" id="myTooltips">
+                <a href="#" data-toggle="tooltip" data-placement="bottom" title=" ">
+                  <i class="fa fa-briefcase danger"></i>
+                  <br>
+                  Duty & Taxes
+                </a>
+              </div>
+            </div>
+
+            <div class="col-sm-12 price text-center">
+              <i class="fa fa-inr"></i> <%= rate_record.cln_total %>
+            </div>
+
+            <div class="end-sec-box">
+              <a href="javascript:void(0)" class="js_last_10_trans" type="standard" rate_master_id="<%= rate_record.rate_master_id %>">
+                  Last 10  <i class="fa fa-sort-numeric-asc"></i>
+                  <br> <span class="trans">Transactions</span>
+              </a>
+            </div>
+
+            <a class="group4" href="img/dhl.png" id="oval">Book Now
+            </a>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="row m-t js_awb_records" style="display:none;" id="js_standard_records">
+      <div class="col-sm-12">
+        <div class="box-white">
+          <div class="col-sm-12">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>AWB</th>
+                  <th>Booking Date</th>
+                  <th>Weight</th>
+                  <th>PCS</th>
+                  <th>Delviry Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr rate_master_id="-1">
+                  <td colspan="5" align="center">No latest records found.</td>
+                </tr>
+                <% for rate_record in @standard_rates %>
+                  <% for awb_record in rate_record.last_10_records %>
+                  <tr rate_master_id="<%= rate_record.rate_master_id %>">
+                    <td> <a href="<%= rate_record.rate_master.network.tracking_link.sub("[AWB_NO]",awb_record.net_no) %>"><%= awb_record.net_no %></a></td>
+                    <td><%= awb_record.booking_date.strftime("%d %b, %Y (%A)") %></td>
+                    <td><%= awb_record.actual_wt %> Kg</td>
+                    <td><%= awb_record.no_pcs %></td>
+                    <td><%= awb_record.delivery_datetime.strftime("%d %b, %Y (%A)") %></td>
+                  </tr>
+                <%  end 
+                  end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% if @economic_rates.count > 0 %>
+  <div class="col-sm-12 sec-head">
+    <%= APP_CONFIG["rate_master_category_id"][3] %>
+  </div>
+      
+  <div class="search-result-sec">
+    <div class="row">
+      <% for rate_record in @economic_rates %>
+        <div class="col-sm-4">
+          <div class="box">
+            <div class="logo-bar">
+              <div class="col-sm-6">
+                <div class="box-logo">
+                  <%= image_tag "/"+rate_record.rate_master.network.image.url(:thumb) %>
+                  <div class="network">
+                    <%= rate_record.rate_master.network.network_name %>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 text-right">
+                <i class="fa fa-clock-o"></i> Estimated Delivery<br>
+                <p class="est-del-tym">
+                  <%= APP_CONFIG['delivery_days'][rate_record.dely_1.to_s+"-"+rate_record.dely_2.to_s] %>
+                </p>
+              </div>
+            </div>
+              
+            <div class="middle-sec-box">
+              <div class="col-sm-4 text-center" id="myTooltips">
+                <a href="#" data-toggle="tooltip" data-placement="bottom" title=" ">
+                  <i class="fa fa-list-alt primary_blue"></i>
+                  <br>
+                  Paper Work
+                </a>
+              </div>
+              <div class="col-sm-4 text-center" id="myTooltips">
+                <a href="#" data-toggle="tooltip" data-placement="bottom" title=" ">
+                  <i class="fa fa-usd blue"></i>
+                  <br>
+                  Invoice Value
+                </a>
+              </div>
+              <div class="col-sm-4 text-center" id="myTooltips">
+                <a href="#" data-toggle="tooltip" data-placement="bottom" title=" ">
+                  <i class="fa fa-briefcase danger"></i>
+                  <br>
+                  Duty & Taxes
+                </a>
+              </div>
+            </div>
+
+            <div class="col-sm-12 price text-center">
+              <i class="fa fa-inr"></i> <%= rate_record.cln_total %>
+            </div>
+
+            <div class="end-sec-box">
+              <a href="javascript:void(0)" class="js_last_10_trans" type="economic" rate_master_id="<%= rate_record.rate_master_id %>">
+                  Last 10  <i class="fa fa-sort-numeric-asc"></i>
+                  <br> <span class="trans">Transactions</span>
+              </a>
+            </div>
+
+            <a class="group4" href="img/dhl.png" id="oval">Book Now
+            </a>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="row m-t js_awb_records" style="display:none;" id="js_economic_records">
+      <div class="col-sm-12">
+        <div class="box-white">
+          <div class="col-sm-12">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>AWB</th>
+                  <th>Booking Date</th>
+                  <th>Weight</th>
+                  <th>PCS</th>
+                  <th>Delviry Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr rate_master_id="-1">
+                  <td colspan="5" align="center">No latest records found.</td>
+                </tr>
+                <% for rate_record in @economic_rates %>
+                  <% for awb_record in rate_record.last_10_records %>
+                  <tr rate_master_id="<%= rate_record.rate_master_id %>">
+                    <td> <a href="<%= rate_record.rate_master.network.tracking_link.sub("[AWB_NO]",awb_record.net_no) %>"><%= awb_record.net_no %></a></td>
+                    <td><%= awb_record.booking_date.strftime("%d %b, %Y (%A)") %></td>
+                    <td><%= awb_record.actual_wt %> Kg</td>
+                    <td><%= awb_record.no_pcs %></td>
+                    <td><%= awb_record.delivery_datetime.strftime("%d %b, %Y (%A)") %></td>
+                  </tr>
+                <%  end 
+                  end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+
+<!-- <div class="col-sm-4">
+  <div class="box">
+    <div class="logo-bar">
+      <div class="col-sm-6">
+        <div class="box-logo">
+          <img src="img/dhl.png">
+          <div class="network">
+            DHL Express
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 text-right">
+        <i class="fa fa-clock-o"></i> Estimated Delivery<br>
+        <p class="est-del-tym">3-4 Bizz Days</p>  
+      </div>
+    </div>
+      
+      <div class="middle-sec-box">
+        <div class="col-sm-4 text-center" id="myTooltips">
+        <a href="#" data-toggle="tooltip" data-placement="bottom" title=" ">
+             <i class="fa fa-list-alt primary_blue"></i>
+             <br>
+             Paper Work
+             </a>
+        </div>
+        <div class="col-sm-4 text-center" id="myTooltips">
+        <a href="#" data-toggle="tooltip" data-placement="bottom" title=" ">
+            <i class="fa fa-usd blue"></i>
+            <br>
+            Invoice Value
+            </a>
+        </div>
+        <div class="col-sm-4 text-center" id="myTooltips">
+            <a href="#" data-toggle="tooltip" data-placement="bottom" title=" ">
+            <i class="fa fa-briefcase danger"></i>
+            <br>
+            Duty & Taxes</a>
+        </div>
+      </div>
+      <div class="col-sm-12 price text-center">
+        <i class="fa fa-inr"></i> 1200
+      </div>
+      <div class="end-sec-box">
+      <a href="">
+            Last 10  <i class="fa fa-sort-numeric-asc"></i> <br> <span class="trans">Transactions</span>
+            </a>
+      </div>
+      <div id="oval"> Book Now</div>
+    </div>
+</div>
+<div class="col-sm-4">
+  <div class="box"></div>
+</div> -->
+<% else %>
+  <div class="col-sm-12 align-center no-result-found">
+    No Results Found
+  </div>
+<% end %>
+
+<script type="text/javascript">
+//$(document).ready(function(){
+    $("#myTooltips a").tooltip({
+      html: true
+       // template : '<div class="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-head"><div class="tooltip-sub-head">Heading</div><ul class="tooltip_list"><li>- lorem ipsum dummy text amet</li><li>- lorem ipsum dummy text amet</li><li>- lorem ipsum dummy text amet</li><li>- lorem ipsum dummy text amet</li><li>- lorem ipsum dummy text amet</li></ul></div><div class="tooltip-inner"></div></div>'
+    });
+    $("#doc_title a").tooltip({
+      html: true
+       // template : '<div class="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-head"><div class="tooltip-sub-head">Heading</div><ul class="tooltip_list"><li>- lorem ipsum dummy text amet</li><li>- lorem ipsum dummy text amet</li><li>- lorem ipsum dummy text amet</li><li>- lorem ipsum dummy text amet</li><li>- lorem ipsum dummy text amet</li></ul></div><div class="tooltip-inner"></div></div>'
+    });
+//});
+</script>

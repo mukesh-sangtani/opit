@@ -1,0 +1,2 @@
+$(".no-hover").remove();
+$("<%= escape_javascript(render("session_records")) %>").insertAfter($("a[group_id='<%= escape_javascript(params[:id]) %>']").parents("tr:first"));

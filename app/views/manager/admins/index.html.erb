@@ -1,0 +1,27 @@
+<% content_for :header do %>
+	<h1 class="col-xs-12 col-sm-4 text-center text-left-sm">
+    <i class="fa fa-user page-header-icon"></i>&nbsp;&nbsp;Users
+  </h1>
+  <%= link_to "Add New +", new_admin_registration_path, :class => "add-new_btn btn btn-primary col-sm-1" %>
+<% end %>
+
+<%= form_tag manager_admins_path, :method => 'get', :id => "search_form" do %>
+	<%= hidden_field_tag :direction, params[:direction], :id => "js_direction" %>
+	<%= hidden_field_tag :sort, params[:sort], :id => "js_sort" %>
+	<%= hidden_field_tag :limit, params[:limit], :id => "js_limit" %>
+	<%= hidden_field_tag :page, params[:page], :id => "js_page" %>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="first-col col-sm-3">
+        <%= text_field_tag :search, params[:search], :class => "js_search_field page-search_feild" %>
+      </div>
+      <div class="col-sm-3">
+        <%= button_tag "Search", :name => nil, :id => "search_form_submit", :class => "btn btn-success page-btn-search", :type => "button" %>
+      </div>
+    </div>
+  </div>
+  <div class="panel search_view_table" id="admins">
+  	<%= render 'admins' %>
+  </div>
+<% end %>

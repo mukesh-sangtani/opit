@@ -1,0 +1,350 @@
+<%= javascript_include_tag 'manager_js/jquery-dateFormat.min' %>
+<% content_for :header do %>
+	<h1 class="col-xs-12 col-sm-4 text-center text-left-sm"><i class="fa fa-search page-header-icon"></i>&nbsp;&nbsp;Rate Search</h1>
+<% end %>
+  <div class="row">
+    <div class="col-sm-12">
+
+      <%= form_tag manager_rate_search_index_path, :method => 'post', :id => "rate_search_form" do %>
+        <%= hidden_field_tag 'group_id', '' %>
+        <div class="panel form-horizontal rate-search">
+          <div class="panel-body">
+            <div class="row form-group">
+              <div class="col-sm-3 text-center">
+                <%= hidden_field_tag 'destination_type', '1', 'id' => 'destination_type' %>
+                <a href="javascript:void(0)" class="btn btn-primary m-r-5 js_destination_type" type="1">International <i class="fa fa-check"></i></a>
+                <a href="javascript:void(0)" class="btn btn-default m-l-5 js_destination_type" type="2">Domestic </a>
+              </div>
+              <!-- <label class="col-sm-1 control-label">
+                <span class="js_intl"></span>
+                <span class="js_dom" style="display:none;">City</span>
+              </label> -->
+              <div class="col-sm-3" id="dest_container">
+                <div class="js_intl">
+                  <%= select_tag "country", options_for_select(@countries), :class => "form-control js_select2", :include_blank => "Select Country" %>
+                </div>
+                <div class="js_dom" style="display:none;">
+                  <%= select_tag "city", grouped_options_for_select(@city_list), :class => "form-control js_select2", :include_blank => "Select City" %>
+                </div>
+              </div>
+              <div class="col-sm-3 text-center">
+                <%= hidden_field_tag 'packet_type', '1', 'id' => 'packet_type' %>
+                <a href="javascript:void(0)" class="btn btn-primary m-r-5 js_packet_type" type="1">Sample <i class="fa fa-check"></i></a>
+
+                <a href="javascript:void(0)" class="btn btn-default m-l-5 js_packet_type" type="2">Commercial</a>
+              </div>
+              <div class="col-sm-1 text-right control-label">
+                <label>Weight <span class="text-sm">(in Kgs)</span></label>
+              </div>
+              <div class="col-sm-2">
+                <div class="field-sec">
+                  <%= select_tag "weight", options_for_select(@weight), :class => "form-control", :include_blank => "Select Weight" %>
+                </div>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-12 text-center">
+                <a href="javascript:void(0)" class="btn btn-primary btn-lg" id="rate_search_form_submit">Submit</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      <div id="js_search_results">
+        
+      </div>
+    </div>
+  </div>
+<div class="flying-mailbox">
+    <a href="javascript:void(0)" id="mailbox_bar" class="bar">
+      <span class="label">10</span>
+      <i class="fa fa-envelope"></i>
+    </a>
+    <div class="list-sec">
+      <div class="panel no-margin">
+        
+          <a href="javascript:void(0)" class="btn btn-labeled btn-block no-border no-border-radius">Send Mail</a>
+        
+      </div>
+      <table class="table" id="js_send_rate_list">
+      <tbody>
+        <tr>
+          <th></th>
+          <th>Destination</th>
+          <th>Network</th>
+          <th>Weight</th>
+          <th>Rate</th>
+        </tr>
+        <tr>
+          <td>D</td>
+          <td>Destination</td>
+          <td>Network</td>
+          <td>Weight</td>
+          <td>Rate</td>
+        </tr>
+        <tr>
+          <td>D</td>
+          <td>Destination</td>
+          <td>Network</td>
+          <td>Weight</td>
+          <td>Rate</td>
+        </tr>
+        <tr>
+          <td>D</td>
+          <td>Destination</td>
+          <td>Network</td>
+          <td>Weight</td>
+          <td>Rate</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+</div>
+<script type="text/javascript">
+  $(".js_select2").select2();
+  $('#mailbox_bar').click(function(){
+    $(".flying-mailbox").toggleClass("open")
+  });
+
+  $(".js_packet_type").click(function(){
+    if(!$(this).hasClass("btn-primary")){
+      $(".js_packet_type").removeClass("btn-primary").find(".fa-check").remove();
+      $(this).addClass("btn-primary").removeClass("btn-default");
+      $(this).append(' <i class="fa fa-check"></i>');
+      $("#packet_type").val($(this).attr("type"));
+    }
+  });
+
+    $("#dest_2").click(function(){
+          $('.js_intl').hide();
+          $('.js_dom').addClass("slideInUp animated").show();
+
+    })
+     $("#dest_1").click(function(){
+          $('.js_dom').hide();
+          $('.js_intl').addClass("slideInDown animated").show();
+    })
+
+  $(".js_destination_type").click(function(){
+    if(!$(this).hasClass("btn-primary")){
+      $(".js_destination_type").removeClass("btn-primary").find(".fa-check").remove();
+      $(this).addClass("btn-primary").removeClass("btn-default");
+      $(this).append(' <i class="fa fa-check"></i>');
+      $("#destination_type").val($(this).attr("type"));
+      if ($(this).attr("type") == 1) {
+        $('.js_dom').hide();
+        $('.js_intl').addClass("slideInDown animated").show();
+      }else{
+        $('.js_intl').hide();
+        $('.js_dom').addClass("slideInUp animated").show();
+      }
+        // if ($(this).attr("type") == 1) {
+        //   $('.js_dom').addClass("slideOutDown animated").hide(400,function(){
+        //     $('.js_intl').addClass("slideInDown animated").show(800,function(){
+        //       $('.js_dom').removeClass("slideOutDown animated");
+        //       $('.js_intl').removeClass("slideInDown animated");
+        //     });
+        //   });
+          
+        //   $('.js_dom').toggle({easing:'linear', direction: "down",duration: 300,done:function(){
+        //       $('.js_intl').toggle({easing:'linear', direction: "down",duration: 1000});
+        //     }
+        //   }); 
+        // }else{
+        //   $('.js_intl').addClass("slideOutUp animated").hide(400,function(){
+        //     $('.js_dom').addClass("slideInUp animated").show(800,function(){
+        //       $('.js_dom').removeClass("slideInUp animated");
+        //       $('.js_intl').removeClass("slideOutUp animated");
+        //     });
+        //   });
+          
+        //   /*$('.js_intl').toggle({easing:'linear', direction: "up",duration: 300, done: function(){
+        //       $('.js_dom').toggle({easing:'linear', direction: "up",duration: 1100});
+        //     }
+        //   });*/
+        // }
+    }
+  });
+
+  function get_search_results(){
+    form_submit = true;
+    if($("#destination_type").val() == 1){
+      var dest_id = $.trim($("#country").val());
+    }else{
+      var dest_id = $.trim($("#city").val());
+    }
+    if(dest_id == ""){
+      $("#dest_container").addClass("has-error");
+      form_submit = false;
+    }else{
+      $("#dest_container").removeClass("has-error");
+    }
+    if($("#weight").val() == ""){
+      $("#weight").parents("div:first").addClass("has-error");
+      form_submit = false;
+    }else{
+      $("#weight").parents("div:first").removeClass("has-error");
+    }
+    if(form_submit){
+      var jqxhr = $.get($("#rate_search_form").attr("action"), $("#rate_search_form").serialize(), null, "script");
+      jqxhr.done(function(data,status,xhr){
+        /* setTimeout(function(){
+          console.log(1);
+          var table = $('#jq-datatables-example').dataTable({"bRetrieve":true}).DataTable();
+          table.columns().eq(0).each( function ( index ) {
+            var column = table.column( index );
+            console.log(column);
+            var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()).empty())
+                .on( 'change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(column).val()
+                    );
+
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append( '<option value="'+d+'">'+d+'</option>' )
+            });
+          });
+        }, 2000); */ 
+        /*var table = $('#jq-datatables-example').dataTable({"bRetrieve":true}).DataTable();
+          table.api().columns().every( function () {
+            var column = this;
+            var select = $('<select><option value=""></option></select>')
+                .appendTo( $(column.footer()).empty() )
+                .on( 'change', function () {
+                    var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+
+                    column
+                        .search( val ? '^'+val+'$' : '', true, false )
+                        .draw();
+                } );
+
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append( '<option value="'+d+'">'+d+'</option>' )
+            });
+          }); */
+      });
+    }
+      return false;
+  }
+
+  $("#rate_search_form_submit").click(function() {
+    var group_id = randString(8)+ (new Date).getTime();
+    $("#group_id").val(group_id);
+    get_search_results();
+  });
+
+  $("#js_search_results").on("click",".js_move_weight",function(){
+    var current_index = $("#weight").prop('selectedIndex');
+    if($(this).hasClass("left")){
+      $("#weight").prop('selectedIndex',current_index-1);
+    }else{
+      $("#weight").prop('selectedIndex',current_index+1);
+    }
+    get_search_results();
+  });
+</script>
+
+<!-- Javascript -->
+<script type="text/javascript">
+  $("#js_search_results").on("ajax:beforeSend",".js_send_rate",function(event, jqXHR, settings){
+    jqXHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+    if($("#destination_type").val() == 1){
+      var dest_id = $.trim($("#country").val());
+    }else{
+      var dest_id = $.trim($("#city").val());
+    }
+    var send_data = {destination_id: dest_id, weight:$("#weight").val(), rate_master_id:$(this).attr("rate_master_id"), network_id:$(this).attr("network_id"), rate:$(this).attr("rate")};
+    var send_data = decodeURIComponent($.param(send_data));
+    //send_data += "&utf=%E2%9C%93"
+    settings.data = send_data;
+  });
+  $("#js_search_results").on("ajax:success",".js_send_rate",function(xhr,data){
+    if(data.status == 1){
+      new_row = '<tr>'+
+          '<td>D'+'</td>'+
+          '<td>D'+'</td>'+
+          '<td>Network</td>'+
+          '<td>Weight</td>'+
+          '<td>Rate</td>'+
+        '</tr>';
+      $("#js_send_rate_list").append(new_row);
+    }
+  });
+  $('#js_search_results').on('click', 'a.js_show_list', function () {
+        var table = $('#jq-datatables-example').dataTable({"bRetrieve":true}).DataTable();
+        var tr = $(this).closest('tr');
+        var row = table.row( tr );
+ 
+        if ( row.child.isShown() ) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+            $(this).addClass("btn-success").removeClass("btn-default");
+        }else {
+            $(this).addClass("btn-default").removeClass("btn-success");
+            // Open this row
+            if($("#destination_type").val() == 1){
+              var dest_id = $.trim($("#country").val());
+            }else{
+              var dest_id = $.trim($("#city").val());
+            }
+            var frmData = {destination_id: dest_id, rate_master_id:$(this).attr("rate_master_id")}
+            $.ajax({
+                type: "POST",
+                async: true,
+                url: managerPluginUrl+'rate_search/last_10_records',
+                data: frmData,
+                dataType: 'json',
+                error: function(a,b,c) {
+                    //alert('Unable to process request. - ' + a);
+                    ajax_loader('hide');
+                },              
+                success: function (data) {
+                  if(data.status == 1){
+                    ajax_loader('hide');
+                    row.child( format(data.data) ).show();
+                    tr.addClass('shown');
+                  }
+                }
+            });
+        }
+    });
+  function format (data){
+    var table = '<table class="table">'+
+                  '<tbody>';
+    if(data.airwaybills.length > 0){
+      table += '<tr>'+
+                  '<th>AWB</th>'+
+                  '<th>Booking Date</th>'+
+                  '<th>PCS</th>'+
+                  '<th>Delviry Date</th>'+
+                '</tr>';
+      var network_link = data.network.tracking_link;
+     $.each(data.airwaybills, function( index, value ) {
+      table += '<tr>'+
+                  '<td> <a href="'+network_link.replace("[AWB_NO]",value.net_no)+'" target="_blank">'+value.net_no+'</a></td>'+
+                  '<td>'+$.format.date(value.booking_date+" 00:00:00","MMM dd, yyyy (ddd)")+'</td>'+
+                  '<td>'+value.no_pcs+'</td>'+
+                  '<td>'+$.format.date(value.delivery_datetime,"MMM dd, yyyy (ddd)")+'</td>'+
+                '</tr>';
+    });
+    }else{
+      table += '<tr>'+
+                  '<td colspan="4" align="center">No latest records found.</th>'+
+                '</tr>';
+    }
+    table += '</tbody>'+
+            '</table>';
+    return table;
+  }
+</script>
+<!-- / Javascript -->

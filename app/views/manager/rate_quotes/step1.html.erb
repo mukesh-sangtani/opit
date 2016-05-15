@@ -1,0 +1,98 @@
+<div class="box">
+	<div class="box-body bg-white-15-0">
+<div class="col-xs-12 rate-page-sub-head">
+                Step 1
+            </div>
+
+<table class="table rate-quote-tbl" id="rate_quote_table">
+    <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th><input type="checkbox" class="js_toggle_visibility" value="1" checked="checked"></th>
+        <th><input type="checkbox" class="js_toggle_visibility" value="1" checked="checked"></th>
+        <th><input type="checkbox" class="js_toggle_visibility" value="1" checked="checked"></th>
+        <% for option in @rate_quote_options %>
+        <th>
+          <input type="checkbox" class="js_toggle_visibility" value="1" checked="checked">
+        </th>
+        <% end %>
+      </tr>
+      <tr>
+        <th>Destination</th>
+        <th>Weight</th>
+        <th>Network</th>
+        <th>Courier Charges</th>
+        <th>Fuel</th>
+        <th>Service Tax</th>
+        <th>Total</th>
+        <% for option in @rate_quote_options %>
+        <th>
+          <%= option.title %>
+        </th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+    <% for data in @rate_quote_data 
+      fuel = ((data.rate*data.rate_master.fuel)/100).round
+      if data.rate_master.s_tax.to_i > 0
+          s_tax = (((data.rate + fuel)*APP_CONFIG['service_tax'].to_f)/100).round
+        else
+          s_tax = 0
+        end %>
+      <tr>
+        <td> <%= data.destination.destination_name %> </td>
+        <td> <%= '%.3f' % data.weight %> </td>
+        <td> <%= data.network.network_name %> </td>
+        <td> <%= text_field_tag "rate", data.rate.round, :style => "width:70px; border-radius:3px; border:1px solid #eeeeee; padding: 3px;", :fuel => data.rate_master.fuel, :stax => data.rate_master.s_tax, :class => 'js_rate_box' %> </td>
+        <td> <%= text_field_tag "fuel", fuel, :style => "width:70px; border-radius:3px; border:1px solid #eeeeee; padding: 3px;", :disabled => "disabled", :class => 'js_fuel' %> </td>
+        <td> <%= text_field_tag "s_tax", s_tax.round, :style => "width:70px; border-radius:3px; border:1px solid #eeeeee; padding: 3px;", :disabled => "disabled", :class => 'js_stax' %> </td>
+        <td> <%= text_field_tag "total", (data.rate + fuel + s_tax).round, :style => "width:70px; border-radius:3px; border:1px solid #eeeeee; padding: 3px;", :class => 'js_total', :disabled => "disabled" %> </td>
+        <% for option in @rate_quote_options %>
+        <td>
+          <% if option.option_type == APP_CONFIG['quote_option']['Options'] %>
+            <%= select_tag option.title, options_for_select(option.options.split(";")), :style => "width:100px; border-radius:3px; border:1px solid #eeeeee; padding: 3px;", :include_blank => false %>
+          <% else %>
+            <%= text_field_tag option.title, "", :style => "width:70px; border-radius:3px; border:1px solid #eeeeee; padding: 3px;" %>
+          <% end %>
+        </td>
+        <% end %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  </div>
+  </div>
+<script type="text/javascript">
+var stax_rate = parseFloat("<%= APP_CONFIG['service_tax'] %>");
+$(function () {
+  $('.js_toggle_visibility').switcher({
+    theme: 'modern'
+  });
+  $('.js_toggle_visibility').change(function(){
+      var index = parseInt($(this).parents("th:first").index()+1);
+      if($(this).is(":checked")){
+        $("#rate_quote_table tr td:nth-child("+index+")").removeClass("highlighted");
+      }else{
+        $("#rate_quote_table tr td:nth-child("+index+")").addClass("highlighted");
+      }
+  });
+  $(".js_rate_box").change(function(){
+    var rate = fuel = stax = total = 0;
+    rate = parseInt($(this).val());
+    if(rate != NaN){
+      fuel = parseInt((rate * $(this).attr("fuel"))/100);
+      if (parseInt($(this).attr("stax")) > 0){
+        stax = parseInt(((rate + fuel)*stax_rate)/100);
+      }
+      total = parseInt(rate + fuel + stax);
+      $(this).parents("tr:first").find(".js_fuel").val(fuel);
+      $(this).parents("tr:first").find(".js_stax").val(stax);
+      $(this).parents("tr:first").find(".js_total").val(total);
+    }
+  });
+});
+</script>

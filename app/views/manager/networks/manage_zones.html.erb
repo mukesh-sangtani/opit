@@ -1,0 +1,226 @@
+<%= stylesheet_link_tag  'manager_css/multi-select', media: 'all' %>
+<%= javascript_include_tag 'manager_js/jquery.multi-select','manager_js/jquery.quicksearch','manager_js/jquery.slimscroll.min' %>
+<% content_for :header do %>
+	<h1 class="col-xs-12 col-sm-8 text-center text-left-sm"><i class="fa fa-gears page-header-icon"></i>&nbsp;&nbsp;Manage Zone Association - <%= @network.network_name.html_safe %>
+  </h1>
+  <%= link_to "GO BACK", manager_networks_path, :class => 'add-new_btn btn btn-page-back col-sm-1' %>
+<% end %>
+
+<div class="row">
+    <div class="col-xs-12">
+    	<form id="js_network_zoning_form" action="javascript:void(0)" method="post" >
+            <input type="hidden" name="network_id" value="<%= @network.id %>" />
+        <div class="box">
+         	<div class="box-body bg-white-15">
+                <div class="form-group">
+                    <label class="col-xs-2">Network Name:</label>
+                    <label class="col-xs-5"> <%= @network.network_name.html_safe %> </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2">Zone List:</label>
+                    <div class="col-xs-5">
+                    	<div id="js_zone_list" class="zone-list">
+                    	<% selected_zone_data = {}
+                        @zone_list.each do |zone| 
+                            disabled = ""
+                            bg_class = ""
+                            if @selected_zone_list.include?(zone.id)
+                                disabled = 'disabled="disabled" checked="checked"'
+                                bg_class = "bg-gray"
+                                selected_zone_data[zone.id] = zone.zone_name
+                            end
+                            %>
+                            <div class="first-block" zone_id="<%= zone.id %>">
+                                <input type="checkbox" <%= disabled %> class="js_all_zone_checkbox" value="<%= zone.id %>">
+                            </div>
+                            <div class='second-block <%= bg_class %>' >
+                                <%= zone.zone_name %>
+                            </div>
+                        <% end %>
+                    	</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-2">Selected Zone List:</label>
+                    <div class="col-xs-5">
+                    	<div id="js_selected_zone_list" class="zone-list">
+                    	<% selected_zone_data.each do |key,zone| %>
+                    		<div class="first-block">
+                    			<input type="radio" name="selected_zone" class="js_selected_zone_radio" value="<%= key %>">
+                    		</div>
+                    		<div class='second-block'> <%= zone %>
+                                <%= image_tag("close-icon.png",'class'=>'js_delete_zone delete-zone-icon','remove_zone_id'=>key) %>
+                            </div>
+                    	<% end %>
+                    	</div>
+                    </div>
+                </div>
+
+    	        <div class="form-group">
+    	        	<label class="col-xs-2">Selected Countries:</label>
+    	        	<div class="col-xs-8">
+    		        	<select multiple="multiple" id="js_country_selection" name="country_seletion[]">
+    				    </select>
+    				</div>
+    			</div>
+
+                <div class="form-group">
+                	<label class="col-xs-2">&nbsp;</label>
+                    <div class="col-xs-10">
+                       <button class="btn btn-primary" id="js_save_network_zoning">Save</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                       <%= link_to 'Cancel', manager_networks_path, 'class'=>'btn  btn-page-back' %></div>
+                </div>
+            </div>
+        </div>
+    	</form>
+    </div>
+</div>
+<script language="javascript" type="text/javascript">
+    var close_image_url = '<%= image_path("close-icon.png") %>';
+	var network_id = "<%= @network.id %>";
+	$('#js_country_selection').multiSelect({
+        selectableOptgroup: true,
+        selectableHeader: "<input type='text' class='search-input' autocomplete='off' placeholder='Search here'>",
+        selectionHeader: "<input type='text' class='search-input' autocomplete='off' placeholder='Search here'>",
+        afterInit: function(ms){
+            var that = this,
+            $selectableSearch = that.$selectableUl.prev(),
+            $selectionSearch = that.$selectionUl.prev(),
+            selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+            selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+            that.qs1 = $selectableSearch.quicksearch(selectableSearchString).on('keydown', function(e){
+              if (e.which === 40){
+                that.$selectableUl.focus();
+                return false;
+              }
+            });
+
+            that.qs2 = $selectionSearch.quicksearch(selectionSearchString).on('keydown', function(e){
+              if (e.which == 40){
+                that.$selectionUl.focus();
+                return false;
+              }
+            });
+        },
+        afterSelect: function(){
+            this.qs1.cache();
+            this.qs2.cache();
+        },
+        afterDeselect: function(){
+            this.qs1.cache();
+            this.qs2.cache();
+        }
+    });
+
+	$('#js_zone_list').slimScroll({
+        height: '150px'
+    });
+
+    $('#js_selected_zone_list').slimScroll({
+        height: '150px'
+    });
+
+    $(".js_all_zone_checkbox").change(function(){
+       $(this).attr("disabled","disabled");
+       $(this).parents(".first-block:first").next(".second-block").addClass("bg-gray");
+       var radio_html = '<div class="first-block"> <input type="radio" value="'+$(this).val()+'" class="js_selected_zone_radio" name="selected_zone" > </div><div class="second-block">'+$(this).parents(".first-block:first").next(".second-block").html()+'<img remove_zone_id="'+$(this).val()+'" class="js_delete_zone delete-zone-icon" src="'+close_image_url+'"></div>';
+       $("#js_selected_zone_list").append(radio_html);
+    });
+
+    $("#js_save_network_zoning").click(function(){
+        var frmData = $("#js_network_zoning_form").serialize();
+        ajax_loader('show');
+        $.ajax({
+            type: "POST",
+            async: true,
+            url:managerPluginUrl+'networks/save_zone_association',
+            data: frmData,
+            dataType: 'json',
+            error: function(a,b,c) {
+                ajax_loader('hide');
+                alert('Unable to process request.');
+            },              
+            success: function (data) {
+                ajax_loader('hide');
+                if(data.status){
+                    $("#js_success").attr("data-text",data.success_message)
+                    $("#js_success").trigger("click");
+                    $("#js_country_selection").html("");
+                    $('#js_country_selection').multiSelect('refresh');
+                    $('.js_selected_zone_radio').attr("checked",false);
+                }
+            }
+        });
+    });
+
+	$('body').on("change", ".js_selected_zone_radio", function(){
+        var selected_zone_id = $(this).val();
+        ajax_loader('show');
+        $.ajax({
+             type: "POST",
+             async: true,
+             url:managerPluginUrl+'networks/get_zone_assoiation',
+             data: {network_id:network_id,zone_id:selected_zone_id},
+             dataType: 'json',
+             error: function(a,b,c) {
+                ajax_loader('hide');
+                alert('Unable to connect server. Please try again later.');
+             },              
+              success: function (data) {
+                ajax_loader('hide');
+                if(data.status == "1"){
+                    $("#js_country_selection").html(data.country_list);
+                    $('#js_country_selection').multiSelect('refresh');
+                }
+              }
+          });
+    });
+
+    $('body').on("click",".js_delete_zone", function(){
+    	var selected_zone_id = $(this).attr('remove_zone_id');
+        var t = this;
+        jConfirm('Are you sure, you want to delete network-zone association for this zone?', 'Confirmation Dialog', function(r) {
+        if(r==true){
+            ajax_loader('show');
+            $.ajax({
+                type: "POST",
+                async: true,
+                url:managerPluginUrl+'networks/remove_network_zone_association',
+                data: {network_id:network_id,zone_id:selected_zone_id},
+                dataType: 'json',
+                error: function(a,b,c) {
+                    ajax_loader('hide');
+                    alert('Unable to connect server. Please try again later.');
+                },              
+                success: function (data) {
+                    ajax_loader('hide');
+
+                    if(data.status){
+                        $("#js_success").attr("data-text",data.success_message)
+                        $("#js_success").trigger("click");
+                        $("#js_country_selection").html("");
+                        $('#js_country_selection').multiSelect('refresh');
+                        $(t).parents(".second-block:first").prev(".first-block:first").remove();
+                        $(t).parents(".second-block:first").remove();
+                        $('#js_zone_list > [zone_id="'+selected_zone_id+'"]').next(".second-block").removeClass('bg-gray');
+                        $('#js_zone_list > [zone_id="'+selected_zone_id+'"]').find('input').removeAttr('disabled').prop('checked',false);
+                        $('.js_selected_zone_radio').attr("checked",false);
+                    }
+                }
+            });
+        }
+      });
+    	
+    });
+
+    function select_first_radio(){
+    if(!($(".js_selected_zone_radio:first") === undefined)){
+            $(".js_selected_zone_radio:first").prop("checked",true);
+            $(".js_selected_zone_radio:first").trigger("change");
+        }
+    }
+
+    select_first_radio();
+</script>
